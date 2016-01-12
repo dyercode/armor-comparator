@@ -7,7 +7,7 @@ var arm = {
 		return l === r ? 0 : (l > r ? 1 : -1) * order;
 	},
 	defaultTo: function(prop,def) {
-		if (typeof prop === "undefined") {
+		if (typeof prop === "undefined" || prop === null) {
 			return def;
 		} else {
 			return prop;
@@ -77,12 +77,11 @@ function Armor(data, character, enhancements) {
 	});
 }
 
-function Character(data) {
+function Character(characterData) {
 	var self = this;
-	if (typeof data === "undefined") { data = {};}
-    self.name = arm.defaultTo(data.name,"Player");
-    self.dexMod = ko.observable(arm.defaultTo(data.dexMod,0));
-    self.flyingClassSkill = ko.observable(arm.defaultTo(data.flyingClassSkill,false));
+	var data = characterData || {};
+    self.dexMod = ko.observable(data.dexMod || 0);
+    self.flyingClassSkill = ko.observable(data.flyingClassSkill || false);
     self.flyingRanks = ko.observable(arm.defaultTo(data.flyingRanks,0));
     self.flyingBeforeCheckPenalty = ko.computed(function() {
     	return parseInt(self.dexMod(), 10) +
