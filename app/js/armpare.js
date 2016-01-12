@@ -1,18 +1,16 @@
 var arm = {
 	asc: 1,
 	desc: -1,
+	numericSort: function(l,r,o) {
+		var order;
+		if (typeof o === "undefined") {order = arm.asc;} else { order = o;}
+		return l === r ? 0 : (l > r ? 1 : -1) * order;
+	},
 	defaultTo: function(prop,def) {
 		if (typeof prop === "undefined") {
 			return def;
 		} else {
 			return prop;
-		}
-	},
-	safeStorage: function(fn) {
-		if(typeof(Storage) !== "undefined") {
-			return localStorage.setItem(key, value);
-		} else {
-		    console.log("no storage");
 		}
 	},
 	setStorage: function(key, value) {
@@ -31,6 +29,17 @@ var arm = {
 	},
 	saveCharacter: function(character) {
 		arm.setStorage("character", character);
+	},
+	loadCharacter: function() {
+		var storedCharacter = arm.getStorage("character");
+		if (storedCharacter === undefined) {
+			return [];
+		} else {
+			return JSON.parse(storedCharacter);
+		}
+	},
+	loadArmors: function() {
+		var storedArmors = getStorage("comparedArmors");
 	}
 };
 
@@ -106,35 +115,19 @@ function CharacterViewModel() {
 	self.remove = function(comparedArmor) {
 		self.comparedArmors.remove(comparedArmor);
 	};
-	var numericSort = function(l,r,o) {
-		var order;
-		if (typeof o === "undefined") {order = arm.asc;} else { order = o;}
-		return l === r ? 0 : (l > r ? 1 : -1) * order;
-	};
 	self.sortedArmors = ko.computed(function() {
 		return self.comparedArmors().sort(function(left,right) {
-			var byArmor = numericSort(left.totalArmor(), right.totalArmor(), arm.desc);
-			var byArmorThenCheckPenalty = byArmor === 0 ? numericSort(left.totalCheckPenalty(),right.totalCheckPenalty(), arm.desc) : byArmor;
-			return byArmorThenCheckPenalty === 0 ? numericSort(left.totalCost(),right.totalCost(),arm.asc): byArmorThenCheckPenalty;
+			var byArmor = arm.numericSort(left.totalArmor(), right.totalArmor(), arm.desc);
+			var byArmorThenCheckPenalty = byArmor === 0 ? arm.numericSort(left.totalCheckPenalty(),right.totalCheckPenalty(), arm.desc) : byArmor;
+			return byArmorThenCheckPenalty === 0 ? arm.numericSort(left.totalCost(),right.totalCost(),arm.asc): byArmorThenCheckPenalty;
 		});
 	});
-	window.character = ko.observable(self);
+	self.persistCharacter = ko.computed(function() {
+		arm.saveCharacter(ko.toJSON(self.character));
+	});
 }
 
-var loadCharacter = function() {
-	var storedCharacter = arm.getStorage("character");
-	if (storedCharacter === undefined) {
-		return [];
-	} else {
-		return JSON.parse(storedCharacter);
-	}
-};
-
-var loadArmors = function() {
-	var storedArmors = getStorage("comparedArmors");
-};
-
-var loadedCharacter = loadCharacter();
+var loadedCharacter = arm.loadCharacter();
 var characterViewModel = new CharacterViewModel();
 //if (typeof loadedCharacter !== "undefined") {
 	//characterViewModel = ko.mapping.fromJS(loadedCharacter, characterViewModel);
