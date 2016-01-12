@@ -58,8 +58,8 @@ function Armor(data, character, enhancements) {
 	self.maxDex = data.maxDex;
 	self.checkPenalty = ko.observable(data.checkPenalty);
 	self.cost = data.cost;
-	self.comfortable = ko.observable(false);
-	self.mithral = ko.observable(false);
+	self.comfortable = ko.observable(data.comfortable);
+	self.mithral = ko.observable(data.mithral);
 	self.enhancements = enhancements;
 	self.selectedEnhancement = ko.observable(data.selectedEnhancement || 0);
 	self.robustSelectedEnhancement = ko.computed(function() {
