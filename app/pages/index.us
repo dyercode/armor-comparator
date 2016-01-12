@@ -10,18 +10,18 @@
 		<ul>
 			<li>
 				<label for="#dexmod">Dex Modifier</label>
-				<input type="number" id="dexmod" name="dexmod" data-bind="value: character.dexMod" />
+				<input type="number" id="dexmod" name="dexmod" data-bind="value: character().dexMod" />
 			</li>
 			<li>
 				<label for="#is-fly-class-skill">Fly class skill?</label>
-				<input type="checkbox" id="fly-class-skill-checkbox" data-bind="checked: character.flyingClassSkill" />
+				<input type="checkbox" id="fly-class-skill-checkbox" data-bind="checked: character().flyingClassSkill" />
 			</li>
 			<li>
 				<label for="#points-in-fly">Points in fly</label>
-				<input type="number" id="points-in-fly" data-bind="value: character.flyingRanks" />
+				<input type="number" id="points-in-fly" data-bind="value: character().flyingRanks" />
 			</li>
 			<li>
-				Base Fly Skill: <span data-bind="text: character.flyingBeforeCheckPenalty"></span>
+				Base Fly Skill: <span data-bind="text: character().flyingBeforeCheckPenalty"></span>
 			</li>
 		</ul>
 	</section>
@@ -66,7 +66,7 @@
 												 optionsValue: 'bonus'" ></select></td>
 		<td><input type="checkbox" data-bind="checked: comfortable"/></td>
 		<td><input type="checkbox" data-bind="checked: mithral"/></td>
-		<td><button data-bind="click: $root.remove">Remove</button></td>
+		<td><button data-bind="click: remove">Remove</button></td>
 	</tr>
 	</tbody>
 	</table>

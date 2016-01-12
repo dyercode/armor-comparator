@@ -30,16 +30,24 @@ var arm = {
 	saveCharacter: function(character) {
 		arm.setStorage("character", character);
 	},
+	saveArmors: function(armors) {
+		arm.setStorage("armors", armors);
+	},
 	loadCharacter: function() {
 		var storedCharacter = arm.getStorage("character");
 		if (storedCharacter === undefined) {
-			return [];
+			return {};
 		} else {
 			return JSON.parse(storedCharacter);
 		}
 	},
 	loadArmors: function() {
-		var storedArmors = getStorage("comparedArmors");
+		var storedArmors = arm.getStorage("armors");
+		if (storedArmors === undefined || storedArmors === null) {
+			return [];
+		} else {
+			return JSON.parse(storedArmors);
+		}
 	}
 };
 
@@ -49,20 +57,20 @@ function Armor(data, character, enhancements) {
 	self.armor = data.armor;
 	self.maxDex = data.maxDex;
 	self.checkPenalty = ko.observable(data.checkPenalty);
-	self.cost = ko.observable(data.cost);
+	self.cost = data.cost;
 	self.comfortable = ko.observable(false);
 	self.mithral = ko.observable(false);
 	self.enhancements = enhancements;
-	self.selectedEnhancement = ko.observable(0);
+	self.selectedEnhancement = ko.observable(data.selectedEnhancement || 0);
 	self.robustSelectedEnhancement = ko.computed(function() {
-		var pos = self.enhancements().map(function(i) {return i.bonus;}).indexOf(self.selectedEnhancement());
-		return self.enhancements()[pos];
+		var pos = self.enhancements.map(function(i) {return i.bonus;}).indexOf(self.selectedEnhancement());
+		return self.enhancements[pos];
 	});
 	self.totalMaxDex = ko.computed(function() {
 		return self.maxDex + (self.mithral() ? 2 : 0);
 	});
 	self.totalCost = ko.computed(function() {
-		return self.cost() + (self.comfortable() ? 5000 : 0) +
+		return self.cost + (self.comfortable() ? 5000 : 0) +
 			self.robustSelectedEnhancement().cost +
 			(self.mithral() ? 9000 : 0);
 	});
@@ -70,10 +78,10 @@ function Armor(data, character, enhancements) {
 		return self.checkPenalty() - (self.comfortable() ? -1 : 0) - (self.mithral() ? -3 : 0);
 	});
 	self.flightBonus = ko.computed(function() {
-		return parseInt(self.totalCheckPenalty(), 10) + character.flyingBeforeCheckPenalty();
+		return parseInt(self.totalCheckPenalty(), 10) + character().flyingBeforeCheckPenalty();
 	});
 	self.totalArmor = ko.computed(function() {
-		return self.armor + Math.min(self.totalMaxDex(), character.dexMod()) + self.robustSelectedEnhancement().bonus;
+		return self.armor + Math.min(self.totalMaxDex(), character().dexMod()) + self.robustSelectedEnhancement().bonus;
 	});
 }
 
@@ -90,26 +98,18 @@ function Character(characterData) {
     });
 }
 
-function CharacterViewModel() {
+function CharacterViewModel(armorData, enhancementData) {
 	var self = this;
-	self.character = new Character(arm.loadCharacter());
+	self.character = ko.observable(new Character(arm.loadCharacter()));
 	self.selectedArmor = ko.observable();
-	self.enhancements = ko.observableArray([]);
-	var armorData = myget("./data/armor.json");
-	self.armors = ko.observableArray([]);
-	armorData.then(function(res) { 
-		self.armors(JSON.parse(res));
-	});
-	//TODO - these promises have dependencies that might happen first
-	// Also I'm pretty much calling them then immediately blocking...
-	var enhancementData = myget("./data/enhancement.json");
-	enhancementData.then(function(res) {
-		self.enhancements(JSON.parse(res));
-	});
-	self.comparedArmors = ko.observableArray([]);
+	self.enhancements = enhancementData;
+	self.armors = armorData;
+	self.comparedArmors = ko.observableArray(arm.loadArmors().map(function(a) {
+		return new Armor(a,self.character, self.enhancements);
+	}));
 	self.addArmor = function() {
-		var pos = self.armors().map(function(i) {return i.name;}).indexOf(self.selectedArmor());
-		self.comparedArmors.push(new Armor(self.armors()[pos], self.character, self.enhancements));
+		var pos = self.armors.map(function(i) {return i.name;}).indexOf(self.selectedArmor());
+		self.comparedArmors.push(new Armor(self.armors[pos], self.character, self.enhancements));
 	};
 	self.remove = function(comparedArmor) {
 		self.comparedArmors.remove(comparedArmor);
@@ -124,12 +124,16 @@ function CharacterViewModel() {
 	self.persistCharacter = ko.computed(function() {
 		arm.saveCharacter(ko.toJSON(self.character));
 	});
+	self.persistArmors = ko.computed(function() {
+		var fields = ["name", "armor", "maxDex", "checkPenalty", "cost", "comfortable", "mithral", "selectedEnhancement"];
+		arm.saveArmors(ko.toJSON(self.comparedArmors, fields));
+	});
 }
 
-var loadedCharacter = arm.loadCharacter();
-var characterViewModel = new CharacterViewModel();
-//if (typeof loadedCharacter !== "undefined") {
-	//characterViewModel = ko.mapping.fromJS(loadedCharacter, characterViewModel);
-//}
-
-ko.applyBindings(characterViewModel);
+var armorData = myget("./data/armor.json");
+var enhancementData = myget("./data/enhancement.json");
+Promise.all([armorData,enhancementData]).then(function(args){
+	//var characterViewModel = new CharacterViewModel(args[0],args[1]);
+	var characterViewModel = CharacterViewModel.apply(this, args.map(function(a) {return JSON.parse(a);}));
+	ko.applyBindings(characterViewModel);
+});
