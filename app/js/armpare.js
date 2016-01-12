@@ -93,7 +93,7 @@ function Character(data) {
 
 function CharacterViewModel() {
 	var self = this;
-	self.character = new Character();
+	self.character = new Character(arm.loadCharacter());
 	self.selectedArmor = ko.observable();
 	self.enhancements = ko.observableArray([]);
 	var armorData = myget("./data/armor.json");
