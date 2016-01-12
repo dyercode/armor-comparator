@@ -1,0 +1,15 @@
+{
+  "name": "armorcomparator",
+  "description": "An app for comparing various armor option for pathfinder d20",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Jon Dyer",
+  "devDependencies": {
+    "lineman": "~0.36.6"
+  },
+  "scripts": {
+    "start": "lineman run",
+    "test": "lineman spec-ci",
+    "production": "lineman clean build && npm i express@3 && node -e \"var e = require('express'), a = e(); a.use(e.static('dist/')); a.listen(process.env.PORT)\""
+  }
+}

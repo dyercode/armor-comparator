@@ -1,0 +1,22 @@
+#armor-comparison-table {
+	width: 100%;
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+#armor-comparison-table td {
+	padding: 10px;
+}
+#armor-comparison-table th {
+	padding: 10px;
+}
+#armor-comparison-table thead tr {
+	background-color: rgb(207,226,243);
+}
+
+#armor-comparison-table tbody tr:nth-child(even) {
+    background-color: #eee;
+}
+#armor-comparison-table tbody tr:nth-child(odd) {
+    background-color: #fff;
+}
