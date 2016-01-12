@@ -54,6 +54,14 @@ module.exports = function(lineman) {
     // comment out the following line:
     //
     // livereload: true
+    'spec-ci': {
+      options: {
+        reporter: {
+          type: 'xunit',
+          dest: 'report.xml'
+        }
+      }
+    }
 
   };
 };
