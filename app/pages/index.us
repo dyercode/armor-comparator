@@ -9,15 +9,15 @@
 		<h2>Player Info</h2>
 		<ul>
 			<li>
-				<label for="#dexmod">Dex Modifier</label>
+				<label for="dexmod">Dex Modifier</label>
 				<input type="number" id="dexmod" name="dexmod" data-bind="value: character().dexMod" />
 			</li>
 			<li>
-				<label for="#is-fly-class-skill">Fly class skill?</label>
+				<label for="is-fly-class-skill">Fly class skill?</label>
 				<input type="checkbox" id="fly-class-skill-checkbox" data-bind="checked: character().flyingClassSkill" />
 			</li>
 			<li>
-				<label for="#points-in-fly">Points in fly</label>
+				<label for="points-in-fly">Points in fly</label>
 				<input type="number" id="points-in-fly" data-bind="value: character().flyingRanks" />
 			</li>
 			<li>
@@ -29,7 +29,7 @@
 	<h2>Armor Comparison</h2>
 	<ul>
 		<li>
-			<label for="#compare-selector">
+			<label for="compare-selector">
 			<select id="compare-selector"
 				data-bind="value: selectedArmor,
 							   options: armors,
@@ -37,6 +37,10 @@
 							   optionsValue: 'name'">
 			</select>
 			<button id="add-armor" data-bind="click: addArmor; value: selectedArmor">Add</button>
+		</li>
+		<li>
+			<label for="auto-sort">Auto-sort</label>
+			<input type="checkbox" id="auto-sort" data-bind="checked: autoSort" />
 		</li>
 	</ul>
 	<table id="armor-comparison-table">
@@ -53,7 +57,7 @@
 			<th scope="col"/>
 		</tr>
 	</thead>
-	<tbody data-bind="foreach: sortedArmors">
+	<tbody data-bind="foreach: autoSort() ? sortedArmors : comparedArmors">
 	<tr>
 		<td><span data-bind="text: name" /></td>
 		<td data-bind="text: totalArmor"></td>

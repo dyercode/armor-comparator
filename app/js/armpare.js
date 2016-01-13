@@ -107,6 +107,7 @@ function CharacterViewModel(armorData, enhancementData) {
 	self.comparedArmors = ko.observableArray(arm.loadArmors().map(function(a) {
 		return new Armor(a,self.character, self.enhancements);
 	}));
+	self.autoSort = ko.observable(true);
 	self.addArmor = function() {
 		var pos = self.armors.map(function(i) {return i.name;}).indexOf(self.selectedArmor());
 		self.comparedArmors.push(new Armor(self.armors[pos], self.character, self.enhancements));
@@ -115,7 +116,8 @@ function CharacterViewModel(armorData, enhancementData) {
 		self.comparedArmors.remove(comparedArmor);
 	};
 	self.sortedArmors = ko.computed(function() {
-		return self.comparedArmors().sort(function(left,right) {
+		var defensiveCopy = self.comparedArmors().concat();
+		return defensiveCopy.sort(function(left,right) {
 			var byArmor = arm.numericSort(left.totalArmor(), right.totalArmor(), arm.desc);
 			var byArmorThenCheckPenalty = byArmor === 0 ? arm.numericSort(left.totalCheckPenalty(),right.totalCheckPenalty(), arm.desc) : byArmor;
 			return byArmorThenCheckPenalty === 0 ? arm.numericSort(left.totalCost(),right.totalCost(),arm.asc): byArmorThenCheckPenalty;
@@ -133,7 +135,5 @@ function CharacterViewModel(armorData, enhancementData) {
 var armorData = myget("./data/armor.json");
 var enhancementData = myget("./data/enhancement.json");
 Promise.all([armorData,enhancementData]).then(function(args){
-	//var characterViewModel = new CharacterViewModel(args[0],args[1]);
-	var characterViewModel = CharacterViewModel.apply(this, args.map(function(a) {return JSON.parse(a);}));
-	ko.applyBindings(characterViewModel);
-});
+	return CharacterViewModel.apply(this, args.map(function(a) {return JSON.parse(a);}));
+}).then(ko.applyBindings);
