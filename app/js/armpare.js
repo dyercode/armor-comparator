@@ -48,6 +48,9 @@ var arm = {
 		} else {
 			return JSON.parse(storedArmors);
 		}
+	},
+	plusify: function(num) {
+		return num >= 0 ? '+' + num : num;
 	}
 };
 
@@ -78,10 +81,10 @@ function Armor(data, character, enhancements) {
 		return self.checkPenalty() - (self.comfortable() ? -1 : 0) - (self.mithral() ? -3 : 0);
 	});
 	self.flightBonus = ko.computed(function() {
-		return parseInt(self.totalCheckPenalty(), 10) + character().flyingBeforeCheckPenalty();
+		return arm.plusify(parseInt(self.totalCheckPenalty(), 10) + character().flyingBeforeCheckPenalty());
 	});
 	self.totalArmor = ko.computed(function() {
-		return self.armor + Math.min(self.totalMaxDex(), character().dexMod()) + self.robustSelectedEnhancement().bonus;
+		return arm.plusify(self.armor + Math.min(self.totalMaxDex(), character().dexMod()) + self.robustSelectedEnhancement().bonus);
 	});
 }
 

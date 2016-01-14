@@ -9,3 +9,12 @@ describe("defaultTo is a helper", function() {
 		expect(arm.defaultTo("fish", 10)).toBe("fish");
 	});
 });
+
+describe("plusify is a helper function", function() {
+	it("Prepends the plus sign to a number", function() {
+		expect(arm.plusify(1)).toBe("+1");
+	});
+	it("Except when the number is negative", function() {
+		expect(arm.plusify(-1)).toBe(-1);
+	});
+});
