@@ -14,6 +14,7 @@ module.exports = function(lineman) {
     //
     js: {
       vendor: [
+        "vendor/js/underscore.js",
         "vendor/js/knockout-3.4.0.js",
         "vendor/js/knockout.mapping-latest.js",
         "vendor/js/get.js",
