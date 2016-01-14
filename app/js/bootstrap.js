@@ -1,17 +1,17 @@
+//GTM
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!=='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WR43VF');
+
 window.body = function() {
   html = JST['app/templates/body.us']();
   document.body.innerHTML += html;
 };
 
-window.gtm = function() {
-  html = JST['app/templates/gtm.us']();
-  document.body.innerHTML += html;
-};
-
 if(window.addEventListener) {
-  window.addEventListener('DOMContentLoaded', gtm, false);
   window.addEventListener('DOMContentLoaded', body, false);
 } else {
-  window.attachEvent('onload', gtm);
   window.attachEvent('onload', body);
 }
