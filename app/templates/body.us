@@ -40,7 +40,7 @@
 <thead>
 	<tr>
 		<th scope="col">Type</th>
-		<th scope="col">Armor Bonus</th>
+		<th scope="col">Total AC Bonus</th>
 		<th scope="col">Armor Check Penalty</th>
 		<th scope="col">Cost</th>
 		<th scope="col">Fly Skill Bonus</th>
