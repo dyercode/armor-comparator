@@ -8,3 +8,5 @@ report.xml
 /generated
 
 .sass-cache
+.cache
+.idea
