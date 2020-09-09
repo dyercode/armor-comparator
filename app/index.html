@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Armor comparison for flying fighters</title>
+    <link rel="stylesheet" type="text/css" href="css/app.css" media="all" />
+</head>
+
+<body>
+    <!-- Google Tag Manager -->
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-WR43VF" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
+    <script>(function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    '//www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-WR43VF');</script>
+    <!-- End Google Tag Manager -->
+    <section id="character">
+        <h2>Player Info</h2>
+        <ul>
+            <li>
+                <label for="dexmod">Dex Modifier</label>
+                <input type="number" id="dexmod" name="dexmod" data-bind="value: character().dexMod" />
+            </li>
+            <li>
+                <label for="is-fly-class-skill">Fly class skill?</label>
+                <input type="checkbox" id="fly-class-skill-checkbox"
+                    data-bind="checked: character().flyingClassSkill" />
+            </li>
+            <li>
+                <label for="points-in-fly">Points in fly</label>
+                <input type="number" id="points-in-fly" data-bind="value: character().flyingRanks" />
+            </li>
+            <li>
+                Base Fly Skill: <span data-bind="text: character().flyingBeforeCheckPenalty"></span>
+            </li>
+        </ul>
+    </section>
+    <section id="armor">
+        <h2>Armor Comparison</h2>
+        <ul>
+            <li>
+                <label for="compare-selector">
+                    <select id="compare-selector" data-bind="value: selectedArmor,
+						   options: armors,
+						   optionsText: 'name',
+						   optionsValue: 'name'">
+                    </select>
+                    <button id="add-armor" data-bind="click: addArmor; value: selectedArmor">Add</button>
+            </li>
+            <li>
+                <label for="auto-sort">Auto-sort</label>
+                <input type="checkbox" id="auto-sort" data-bind="checked: autoSort" />
+            </li>
+        </ul>
+        <table id="armor-comparison-table">
+            <thead>
+                <tr>
+                    <th scope="col">Type</th>
+                    <th scope="col">Total AC Bonus</th>
+                    <th scope="col">Armor Check Penalty</th>
+                    <th scope="col">Cost</th>
+                    <th scope="col">Fly Skill Bonus</th>
+                    <th scope="col">Enchantment Level</th>
+                    <th scope="col">Comfortable</th>
+                    <th scope="col">Mithral</th>
+                    <th scope="col" />
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: autoSort() ? sortedArmors() : comparedArmors">
+                <tr>
+                    <td><span data-bind="text: name" /></td>
+                    <td data-bind="text: $parent.totalArmorRaw($data, $parent.character())"></td>
+                    <td data-bind="text: totalCheckPenalty()"></td>
+                    <td><span data-bind="text: totalCost($parent.enhancements)"></span>gp</td>
+                    <td data-bind="text: $parent.flightBonus($data, $parent.character())"></td>
+                    <td><select data-bind="value: selectedEnhancement,
+											 options: $parent.enhancements,
+											 optionsText: function(armor) {return '+' + armor.bonus},
+											 optionsValue: 'bonus'"></select></td>
+                    <td><input type="checkbox" data-bind="checked: comfortable" /></td>
+                    <td><input type="checkbox" data-bind="checked: mithral" /></td>
+                    <td><button data-bind="click: $parent.remove">Remove</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </section>
+    <script type="text/javascript" src="js/armpare.js"></script>
+</body>
+
+</html

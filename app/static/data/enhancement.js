@@ -1,4 +1,4 @@
-[
+export const enhancementData = [
 	{"bonus":0,"cost":0},
     {"bonus":1,"cost":1000},
     {"bonus":2,"cost":4000},
