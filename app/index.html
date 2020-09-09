@@ -75,8 +75,8 @@
                 <tr>
                     <td><span data-bind="text: name" /></td>
                     <td data-bind="text: $parent.totalArmorRaw($data, $parent.character())"></td>
-                    <td data-bind="text: totalCheckPenalty"></td>
-                    <td><span data-bind="text: totalCost"></span>gp</td>
+                    <td data-bind="text: totalCheckPenalty()"></td>
+                    <td><span data-bind="text: totalCost($parent.enhancements)"></span>gp</td>
                     <td data-bind="text: $parent.flightBonus($data, $parent.character())"></td>
                     <td><select data-bind="value: selectedEnhancement,
 											 options: $parent.enhancements,

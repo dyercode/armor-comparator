@@ -87,16 +87,11 @@ class Armor {
 	};
 
 	totalCost(enhancements) {
-		ko.computed(function () {
-			return self.cost + (self.comfortable() ? 5000 : 0) + robustSelectedEnhancement(enhancements).cost + (self.mithral() ? 9000 : 0);
-		});
+		return this.cost + (this.comfortable() ? 5000 : 0) + this.robustSelectedEnhancement(enhancements).cost + (this.mithral() ? 9000 : 0);
 	}
 
 	totalCheckPenalty() {
-		let self = this;
-		return ko.computed(function () {
-			return self.checkPenalty() - (self.comfortable() ? -1 : 0) - (self.mithral() ? -3 : 0);
-		});
+		return this.checkPenalty() - (this.comfortable() ? -1 : 0) - (this.mithral() ? -3 : 0);
 	}
 
 }
