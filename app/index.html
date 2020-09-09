@@ -71,7 +71,7 @@
                     <th scope="col" />
                 </tr>
             </thead>
-            <tbody data-bind="foreach: autoSort() ? sortedArmors : comparedArmors">
+            <tbody data-bind="foreach: autoSort() ? sortedArmors() : comparedArmors">
                 <tr>
                     <td><span data-bind="text: name" /></td>
                     <td data-bind="text: $parent.totalArmorRaw($data, $parent.character())"></td>

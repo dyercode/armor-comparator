@@ -120,16 +120,16 @@ class CharacterViewModel {
 		this.selectedArmor = ko.observable();
 		this.enhancements = enhancements;
 		this.armors = armorData;
-		let self = this;
-		this.comparedArmors = ko.observableArray(loadArmors().map(function (a) {
-			return new Armor(a, this.character, self.enhancements);
-		}));
+		this.comparedArmors = ko.observableArray([]);
+		loadArmors().map((a) => {
+			this.comparedArmors.push(new Armor(a));
+		});
 		this.autoSort = ko.observable(true);
 	}
 
 	addArmor() {
 		let pos = this.armors.map((i) => i.name).indexOf(this.selectedArmor());
-		this.comparedArmors.push(new Armor(this.armors[pos], this.character, this.enhancements));
+		this.comparedArmors.push(new Armor(this.armors[pos]));
 	};
 
 	remove(comparedArmor) {
@@ -138,12 +138,10 @@ class CharacterViewModel {
 
 	sortedArmors() {
 		let defensiveCopy = this.comparedArmors().concat();
-		return ko.computed(() => {
-			return defensiveCopy.sort(function (left, right) {
-				let byArmor = numericSort(left.totalArmor(), right.totalArmor(), DESC);
-				let byArmorThenCheckPenalty = byArmor === 0 ? numericSort(left.totalCheckPenalty(), right.totalCheckPenalty(), DESC) : byArmor;
-				return byArmorThenCheckPenalty === 0 ? numericSort(left.totalCost(), right.totalCost(), ASC) : byArmorThenCheckPenalty;
-			});
+		return defensiveCopy.sort((left, right) => {
+			let byArmor = numericSort(this.totalArmorRaw(left, this.character()), this.totalArmorRaw(right, this.character()), DESC);
+			let byArmorThenCheckPenalty = byArmor === 0 ? numericSort(left.totalCheckPenalty(), right.totalCheckPenalty(), DESC) : byArmor;
+			return byArmorThenCheckPenalty === 0 ? numericSort(left.totalCost(this.enhancements), right.totalCost(this.enhancements), ASC) : byArmorThenCheckPenalty;
 		});
 	}
 
@@ -174,7 +172,7 @@ class CharacterViewModel {
 	}
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 	const cvm = new CharacterViewModel(armorData, enhancementData);
 	ko.applyBindings(cvm);
 });
