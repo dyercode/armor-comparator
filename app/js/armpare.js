@@ -61,8 +61,6 @@ function loadArmors() {
 };
 
 function plusify(num) {
-	console.log('pllusify')
-	console.dir(num)
 	return num >= 0 ? '+' + num : num;
 }
 
@@ -135,11 +133,8 @@ class CharacterViewModel {
 	}
 
 	addArmor() {
-		console.log(`adding armor`)
 		let pos = this.armors.map((i) => i.name).indexOf(this.selectedArmor());
 		this.comparedArmors.push(new Armor(this.armors[pos], this.character, this.enhancements));
-		console.log('"added"');
-		console.dir(this.comparedArmors());
 	};
 
 	remove(comparedArmor) {
@@ -177,11 +172,6 @@ class CharacterViewModel {
 	}
 
 	totalArmorRaw(armor, character) {
-		console.log(armor.armor)
-		console.log(armor.totalMaxDex())
-		console.log(character.dexMod())
-		console.log(armor.robustSelectedEnhancement(this.enhancements).bonus);
-		console.dir(armor.robustSelectedEnhancement(this.enhancements))
 		return plusify(
 			armor.armor +
 			Math.min(armor.totalMaxDex(), character.dexMod()) +
