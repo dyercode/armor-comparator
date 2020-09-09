@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { defaultTo, plusify } from '../app/js/utils';
+import { defaultTo, plusify, numericSort, DESC } from '../app/js/utils';
 
 describe("defaultTo is a helper", () => {
 	it("returns a default value when a parameter is undefined", () => {
@@ -21,3 +21,30 @@ describe("plusify is a helper function", () => {
 		expect(plusify(-1)).to.equal(-1);
 	});
 });
+
+
+describe('numericSort acts as a numeric comparator', () => {
+	describe('defaulting to ascending', () => {
+		it('greater left number must be 1', () => {
+			expect(numericSort(2, 1)).to.equal(1)
+		})
+		it('lesser left number must be -1', () => {
+			expect(numericSort(1, 2)).to.equal(-1)
+		})
+		it('equal numbers must be 0', () => {
+			expect(numericSort(1, 1)).to.equal(0)
+		})
+	})
+
+	describe('can be set to descending', () => {
+		it('greater left number must be -1', () => {
+			expect(numericSort(2, 1, DESC)).to.equal(-1)
+		})
+		it('lesser left number must be 1', () => {
+			expect(numericSort(1, 2, DESC)).to.equal(1)
+		})
+		it('equal numbers must be 0', () => {
+			expect(numericSort(1, 1)).to.equal(0)
+		})
+	})
+})
