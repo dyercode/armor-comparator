@@ -1,23 +1,7 @@
 import { enhancementData } from '../static/data/enhancement';
 import { armorData } from '../static/data/armor';
 import * as ko from 'knockout';
-
-const ASC = 1;
-const DESC = -1;
-
-export function numericSort(l, r, o) {
-	let order;
-	if (typeof o === "undefined") { order = ASC; } else { order = o; }
-	return l === r ? 0 : (l > r ? 1 : -1) * order;
-}
-
-export function defaultTo(prop, def) {
-	if (typeof prop === "undefined" || prop === null) {
-		return def;
-	} else {
-		return prop;
-	}
-}
+import {ASC, DESC, plusify, defaultTo, numericSort} from './utils';
 
 function setStorage(key, value) {
 	if (typeof (Storage) !== "undefined") {
@@ -25,7 +9,7 @@ function setStorage(key, value) {
 	} else {
 		console.log("no storage");
 	}
-};
+}
 
 function getStorage(key) {
 	if (typeof (Storage) !== "undefined") {
@@ -33,14 +17,15 @@ function getStorage(key) {
 	} else {
 		console.log("no storage");
 	}
-};
+}
 
 export function saveCharacter(character) {
 	setStorage("character", character);
 }
+
 function saveArmors(armors) {
 	setStorage("armors", armors);
-};
+}
 
 function loadCharacter() {
 	var storedCharacter = getStorage("character");
@@ -49,7 +34,7 @@ function loadCharacter() {
 	} else {
 		return JSON.parse(storedCharacter);
 	}
-};
+}
 
 function loadArmors() {
 	let storedArmors = getStorage("armors");
@@ -58,12 +43,7 @@ function loadArmors() {
 	} else {
 		return JSON.parse(storedArmors);
 	}
-};
-
-function plusify(num) {
-	return num >= 0 ? '+' + num : num;
 }
-
 
 class Armor {
 	constructor(data) {
@@ -80,11 +60,11 @@ class Armor {
 	robustSelectedEnhancement(enhancements) {
 		let pos = enhancements.map((i) => i.bonus).indexOf(this.selectedEnhancement());
 		return enhancements[pos];
-	};
+	}
 
 	totalMaxDex() {
 		return this.maxDex + (this.mithral() ? 2 : 0);
-	};
+	}
 
 	totalCost(enhancements) {
 		return this.cost + (this.comfortable() ? 5000 : 0) + this.robustSelectedEnhancement(enhancements).cost + (this.mithral() ? 9000 : 0);
@@ -130,11 +110,11 @@ class CharacterViewModel {
 	addArmor() {
 		let pos = this.armors.map((i) => i.name).indexOf(this.selectedArmor());
 		this.comparedArmors.push(new Armor(this.armors[pos]));
-	};
+	}
 
 	remove(comparedArmor) {
 		this.comparedArmors.remove(comparedArmor);
-	};
+	}
 
 	sortedArmors() {
 		let defensiveCopy = this.comparedArmors().concat();
