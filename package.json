@@ -5,11 +5,20 @@
   "private": true,
   "author": "Jon Dyer",
   "devDependencies": {
-    "lineman": "~0.36.6"
+    "eslint": "^7.8.1",
+    "lineman": "~0.36.6",
+    "parcel-bundler": "^1.12.4"
   },
   "scripts": {
     "start": "lineman run",
+    "dev": "parcel app/index.html",
+    "build": "parcel build src/index.html --public-url .",
     "test": "lineman spec-ci",
+    "lint": "eslint ./app --ext .js,.jsx,.ts,.tsx",
     "production": "lineman clean build && npm i express@3 && node -e \"var e = require('express'), a = e(); a.use(e.static('dist/')); a.listen(process.env.PORT)\""
+  },
+  "dependencies": {
+    "knockout": "^3.5.1",
+    "knockout-mapping": "^2.6.0"
   }
 }

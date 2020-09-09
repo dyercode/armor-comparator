@@ -1,4 +1,4 @@
-var myget = function (url) {
+export function myget(url) {
 	"use strict";
 	return new Promise(function (resolve, reject) {
 		var http = new XMLHttpRequest();
@@ -6,9 +6,9 @@ var myget = function (url) {
 			resolve(http.response);
 		};
 		http.onerror = function () {
-			reject({success: false, message: 'Connection Error.'});
+			reject({ success: false, message: 'Connection Error.' });
 		};
 		http.open('get', url, true);
 		http.send();
 	});
-};
+}
