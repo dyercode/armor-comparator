@@ -1,7 +1,7 @@
 import { enhancementData } from '../static/data/enhancement';
 import { armorData } from '../static/data/armor';
 import * as ko from 'knockout';
-import {ASC, DESC, plusify, defaultTo, numericSort} from './utils';
+import { ASC, DESC, plusify, defaultTo, numericSort } from './utils';
 
 function setStorage(key, value) {
 	if (typeof (Storage) !== "undefined") {
