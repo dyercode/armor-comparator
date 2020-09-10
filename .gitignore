@@ -11,3 +11,6 @@ report.xml
 .cache
 .idea
 .vscode
+.merlin
+**/*.bs.js
+lib

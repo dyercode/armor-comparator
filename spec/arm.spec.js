@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import { defaultTo, plusify, numericSort, DESC } from '../app/js/utils';
+import { numericSort, DESC } from '../app/js/utils';
+import { plusify, defaultTo } from '../src/Demo.bs'
+
 
 describe("defaultTo is a helper", () => {
 	it("returns a default value when a parameter is undefined", () => {
@@ -18,7 +20,7 @@ describe("plusify is a helper function", () => {
 		expect(plusify(1)).to.equal("+1");
 	});
 	it("Except when the number is negative", () => {
-		expect(plusify(-1)).to.equal(-1);
+		expect(plusify(-1)).to.equal('-1');
 	});
 });
 

@@ -1,5 +1,6 @@
 import * as ko from 'knockout';
-import { ASC, DESC, plusify, defaultTo, numericSort } from './utils';
+import { ASC, DESC, numericSort } from './utils';
+import { defaultTo, plusify } from '../../src/Demo.bs'
 
 function setStorage(key, value) {
 	if (typeof (Storage) !== "undefined") {
