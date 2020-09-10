@@ -9,7 +9,7 @@ import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
 import Test.Spec.Runner (runSpec)
 import App.Utils (plusify)
-import App.Armor (totalMaxDex)
+import App.Armor (totalMaxDex, totalCheckPenalty)
 import Test.Spec.QuickCheck (quickCheck)
 import Test.QuickCheck ((===), (/==))
 
@@ -28,3 +28,13 @@ main = launchAff_ $ runSpec [consoleReporter] do
       quickCheck \n -> totalMaxDex (armor n false)  === n
     it "mithral adds 2" do
       quickCheck \n -> totalMaxDex (armor n true)  === n + 2
+  describe "totalCheckPenalty" do
+    let armor = \checkPenalty mithral comfortable -> { name : "fp", armor : 0, maxDex: 0, cost: 0, mithral: mithral, comfortable: comfortable, checkPenalty : checkPenalty }
+    it "is raw value for unenchanted regular material" do
+      quickCheck \n -> totalCheckPenalty (armor n false false)  === n
+    it "comfortable subtracts 1" do
+      quickCheck \n -> totalCheckPenalty (armor n false true)  === n - 1
+    it "mithral subtracts 3" do
+      quickCheck \n -> totalCheckPenalty (armor n true false)  === n - 3
+    it "both stack" do
+      quickCheck \n -> totalCheckPenalty (armor n true true)  === n - 4
