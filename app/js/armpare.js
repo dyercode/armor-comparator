@@ -1,6 +1,6 @@
 import * as ko from 'knockout';
-import { ASC, DESC, defaultTo, numericSort } from './utils';
-import { plusify } from '../../output/App.Utils';
+import { defaultTo, numericSort } from './utils';
+import { asc, desc, plusify } from '../../output/App.Utils';
 
 function setStorage(key, value) {
 	if (typeof (Storage) !== "undefined") {
@@ -118,9 +118,9 @@ export class CharacterViewModel {
 	sortedArmors() {
 		let defensiveCopy = this.comparedArmors().concat();
 		return defensiveCopy.sort((left, right) => {
-			let byArmor = numericSort(this.totalArmorRaw(left, this.character()), this.totalArmorRaw(right, this.character()), DESC);
-			let byArmorThenCheckPenalty = byArmor === 0 ? numericSort(left.totalCheckPenalty(), right.totalCheckPenalty(), DESC) : byArmor;
-			return byArmorThenCheckPenalty === 0 ? numericSort(left.totalCost(this.enhancements), right.totalCost(this.enhancements), ASC) : byArmorThenCheckPenalty;
+			let byArmor = numericSort(this.totalArmorRaw(left, this.character()), this.totalArmorRaw(right, this.character()), desc);
+			let byArmorThenCheckPenalty = byArmor === 0 ? numericSort(left.totalCheckPenalty(), right.totalCheckPenalty(), desc) : byArmor;
+			return byArmorThenCheckPenalty === 0 ? numericSort(left.totalCost(this.enhancements), right.totalCost(this.enhancements), asc) : byArmorThenCheckPenalty;
 		});
 	}
 
