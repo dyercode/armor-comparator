@@ -11,3 +11,5 @@ report.xml
 .cache
 .idea
 .vscode
+output
+.spago

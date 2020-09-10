@@ -1,7 +1,6 @@
-import { enhancementData } from '../static/data/enhancement';
-import { armorData } from '../static/data/armor';
 import * as ko from 'knockout';
-import { ASC, DESC, plusify, defaultTo, numericSort } from './utils';
+import { ASC, DESC, defaultTo, numericSort } from './utils';
+import { plusify } from '../../output/App.Utils';
 
 function setStorage(key, value) {
 	if (typeof (Storage) !== "undefined") {
@@ -94,7 +93,7 @@ class Character {
 	}
 }
 
-class CharacterViewModel {
+export class CharacterViewModel {
 	constructor(armorData, enhancements) {
 		this.character = ko.observable(new Character(loadCharacter()));
 		this.selectedArmor = ko.observable();
@@ -151,8 +150,3 @@ class CharacterViewModel {
 			armor.robustSelectedEnhancement(this.enhancements).bonus);
 	}
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-	const cvm = new CharacterViewModel(armorData, enhancementData);
-	ko.applyBindings(cvm);
-});
