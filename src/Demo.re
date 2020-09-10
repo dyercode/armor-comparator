@@ -1,5 +1,3 @@
-Js.log("Hello, BuckleScript and Reason!");
-
 let defaultTo = (prop, defined) => {
   switch (Js.Nullable.toOption(prop)) {
   | Some(p) => p
@@ -8,5 +6,6 @@ let defaultTo = (prop, defined) => {
 };
 
 let plusify = num => {
-  num >= 0 ? "+" ++ string_of_int(num) : string_of_int(num);
+  let numberText = string_of_int(num);
+  num >= 0 ? "+" ++ numberText : numberText;
 };
