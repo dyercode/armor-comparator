@@ -12,10 +12,10 @@ import App.Utils (plusify)
 
 main :: Effect Unit
 main = launchAff_ $ runSpec [consoleReporter] do
-    describe "plusify is a helper function" do
-        it "Prepends the plus sign to a positive number" do
-          plusify (1) `shouldEqual` "+1"
-        it "Prepends the plus sign to zero" do
-          plusify (0) `shouldEqual` "+0"
-        it "Does not change negative" do
-          plusify (-1) `shouldEqual` "-1"
+ describe "plusify is a helper function" do
+   it "Prepends the plus sign to a positive number" do
+     plusify (1) `shouldEqual` "+1"
+   it "Prepends the plus sign to zero" do
+     plusify (0) `shouldEqual` "+0"
+   it "Does not change negative" do
+     plusify (-1) `shouldEqual` "-1"
