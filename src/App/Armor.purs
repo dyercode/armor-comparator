@@ -1,7 +1,9 @@
 module App.Armor where 
 
+import Prelude
+
 type Armor =
-  {  name :: String
+  { name :: String
   , armor :: Int
   , maxDex :: Int
   , cost :: Int
@@ -9,6 +11,11 @@ type Armor =
   , comfortable :: Boolean
   , checkPenalty :: Int
   }
+
+totalMaxDex :: Armor -> Int
+totalMaxDex armor = if armor.mithral
+                      then armor.maxDex + 2
+                      else armor.maxDex
 
 type Character =
   { dexMod :: Int
