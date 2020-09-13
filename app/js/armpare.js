@@ -1,6 +1,7 @@
 import * as ko from 'knockout';
 import { ASC, DESC, numericSort } from './utils';
 import { defaultTo, plusify, loadCharacter, loadArmors } from '../../src/Demo.bs'
+import { loadCharacter, loadArmors } from '../../src/Persistence.bs'
 
 function setStorage(key, value) {
 	if (typeof (Storage) !== "undefined") {

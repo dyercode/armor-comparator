@@ -23,14 +23,3 @@ type armor = {
   mithral: bool,
   selectedEnhancement: enhancement,
 }
-
-/*
- 	this.armor = data.armor;
- 	this.maxDe
- 	this.checkPenalty = ko.observable(data.checkPenalty);
- 	this.cost = data.cost;
- 	this.comfortable = ko.observable(data.comfortable);
- 	this.mithral = ko.observable(data.mithral);
- 	this.selectedEnhancement = ko.observable(data.selectedEnhancement || 0);
- }
- */
