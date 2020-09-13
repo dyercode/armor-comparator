@@ -1,18 +1,10 @@
 import * as ko from 'knockout';
 import { ASC, DESC, numericSort } from './utils';
-import { defaultTo, plusify } from '../../src/Demo.bs'
+import { defaultTo, plusify, loadCharacter, loadArmors } from '../../src/Demo.bs'
 
 function setStorage(key, value) {
 	if (typeof (Storage) !== "undefined") {
 		return localStorage.setItem(key, value);
-	} else {
-		console.log("no storage");
-	}
-}
-
-function getStorage(key) {
-	if (typeof (Storage) !== "undefined") {
-		return localStorage.getItem(key);
 	} else {
 		console.log("no storage");
 	}
@@ -26,22 +18,19 @@ function saveArmors(armors) {
 	setStorage("armors", armors);
 }
 
-function loadCharacter() {
-	var storedCharacter = getStorage("character");
-	if (storedCharacter === undefined) {
-		return {};
-	} else {
-		return JSON.parse(storedCharacter);
-	}
+function sortArmors(armors, character, enhancements) {
+	return armors.sort((left, right) => {
+		let byArmor = numericSort(totalArmor(left, character, enhancements), totalArmor(right, character, enhancements), DESC);
+		let byArmorThenCheckPenalty = byArmor === 0 ? numericSort(left.totalCheckPenalty(), right.totalCheckPenalty(), DESC) : byArmor;
+		return byArmorThenCheckPenalty === 0 ? numericSort(left.totalCost(enhancements), right.totalCost(enhancements), ASC) : byArmorThenCheckPenalty;
+	});
 }
 
-function loadArmors() {
-	let storedArmors = getStorage("armors");
-	if (storedArmors === undefined || storedArmors === null) {
-		return [];
-	} else {
-		return JSON.parse(storedArmors);
-	}
+function totalArmor(armor, character, enhancements) {
+	return plusify(
+		armor.armor +
+		Math.min(armor.totalMaxDex(), character.dexMod()) +
+		armor.robustSelectedEnhancement(enhancements).bonus);
 }
 
 class Armor {
@@ -117,11 +106,7 @@ export class CharacterViewModel {
 
 	sortedArmors() {
 		let defensiveCopy = this.comparedArmors().concat();
-		return defensiveCopy.sort((left, right) => {
-			let byArmor = numericSort(this.totalArmorRaw(left, this.character()), this.totalArmorRaw(right, this.character()), DESC);
-			let byArmorThenCheckPenalty = byArmor === 0 ? numericSort(left.totalCheckPenalty(), right.totalCheckPenalty(), DESC) : byArmor;
-			return byArmorThenCheckPenalty === 0 ? numericSort(left.totalCost(this.enhancements), right.totalCost(this.enhancements), ASC) : byArmorThenCheckPenalty;
-		});
+		return sortArmors(defensiveCopy, this.character(), this.enhancements);
 	}
 
 	persistCharacter() {
@@ -143,10 +128,5 @@ export class CharacterViewModel {
 		return plusify(parseInt(armor.totalCheckPenalty(), 10) + character.flyingBeforeCheckPenalty());
 	}
 
-	totalArmorRaw(armor, character) {
-		return plusify(
-			armor.armor +
-			Math.min(armor.totalMaxDex(), character.dexMod()) +
-			armor.robustSelectedEnhancement(this.enhancements).bonus);
-	}
+	totalArmorRaw = totalArmor
 }

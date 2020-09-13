@@ -9,7 +9,7 @@
     "@babel/register": "^7.11.5",
     "bs-platform": "^8.2.0",
     "chai": "^4.2.0",
-    "eslint": "^7.8.1",
+    "eslint": "^7.9.0",
     "mocha": "^8.1.3",
     "parcel-bundler": "^1.12.4"
   },
@@ -17,10 +17,10 @@
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
     "clean": "bsb -clean-world",
-    "dev": "parcel app/index.html",
-    "build-old": "parcel build src/index.html --public-url .",
+    "dev": "bsb -make-world && parcel app/index.html",
+    "build-old": "bsb-make world && parcel build src/index.html --public-url .",
     "lint": "eslint app --ext .js,.jsx,.ts,.tsx",
-    "test": "mocha --require @babel/register"
+    "test": "bsb -make-world && mocha --require @babel/register"
   },
   "dependencies": {
     "knockout": "^3.5.1",
