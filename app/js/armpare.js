@@ -1,7 +1,8 @@
 import * as ko from 'knockout';
-import { ASC, DESC, numericSort } from './utils';
-import { defaultTo, plusify, loadCharacter, loadArmors } from '../../src/Demo.bs'
-import { loadCharacter, loadArmors } from '../../src/Persistence.bs'
+import { plusify, numericSort } from '../../src/Demo.bs'
+import { defaultCharacter } from '../../src/Model.bs'
+import { loadCharacter, loadArmors, asc, desc } from '../../src/Persistence.bs'
+import { totalArmor, totalMaxDex, totalCheckPenalty, flyingBeforeCheckPenalty } from '../../src/Calculations.bs'
 
 function setStorage(key, value) {
 	if (typeof (Storage) !== "undefined") {
@@ -21,17 +22,10 @@ function saveArmors(armors) {
 
 function sortArmors(armors, character, enhancements) {
 	return armors.sort((left, right) => {
-		let byArmor = numericSort(totalArmor(left, character, enhancements), totalArmor(right, character, enhancements), DESC);
-		let byArmorThenCheckPenalty = byArmor === 0 ? numericSort(left.totalCheckPenalty(), right.totalCheckPenalty(), DESC) : byArmor;
-		return byArmorThenCheckPenalty === 0 ? numericSort(left.totalCost(enhancements), right.totalCost(enhancements), ASC) : byArmorThenCheckPenalty;
+		let byArmor = numericSort(totalArmor(left, character, enhancements), totalArmor(right, character, enhancements), desc);
+		let byArmorThenCheckPenalty = byArmor === 0 ? numericSort(totalCheckPenalty(left), totalCheckPenalty(right), desc) : byArmor;
+		return byArmorThenCheckPenalty === 0 ? numericSort(left.totalCost(enhancements), right.totalCost(enhancements), asc) : byArmorThenCheckPenalty;
 	});
-}
-
-function totalArmor(armor, character, enhancements) {
-	return plusify(
-		armor.armor +
-		Math.min(armor.totalMaxDex(), character.dexMod()) +
-		armor.robustSelectedEnhancement(enhancements).bonus);
 }
 
 class Armor {
@@ -52,7 +46,7 @@ class Armor {
 	}
 
 	totalMaxDex() {
-		return this.maxDex + (this.mithral() ? 2 : 0);
+		totalMaxDex(this);
 	}
 
 	totalCost(enhancements) {
@@ -65,34 +59,17 @@ class Armor {
 
 }
 
-class Character {
-	constructor(characterData) {
-		let data = characterData || {};
-		this.dexMod = ko.observable(data.dexMod || 0);
-		this.flyingClassSkill = ko.observable(data.flyingClassSkill || false);
-		this.flyingRanks = ko.observable(defaultTo(data.flyingRanks, 0));
-	}
-
-	get flyingBeforeCheckPenalty() {
-		let self = this;
-		return ko.computed(() => {
-			return parseInt(self.dexMod(), 10) +
-				((self.flyingClassSkill() && (parseInt(self.flyingRanks(), 10) > 0)) ? 3 : 0) +
-				parseInt(self.flyingRanks(), 10);
-		})
-	}
-}
-
 export class CharacterViewModel {
 	constructor(armorData, enhancements) {
-		this.character = ko.observable(new Character(loadCharacter()));
+		this.character = ko.observable({
+			...defaultCharacter,
+			...loadCharacter()
+		});
 		this.selectedArmor = ko.observable();
 		this.enhancements = enhancements;
 		this.armors = armorData;
 		this.comparedArmors = ko.observableArray([]);
-		loadArmors().map((a) => {
-			this.comparedArmors.push(new Armor(a));
-		});
+		loadArmors().map((a) => { console.dir(a); return new Armor(a) }).map(this.comparedArmors.push);
 		this.autoSort = ko.observable(true);
 	}
 
@@ -119,14 +96,14 @@ export class CharacterViewModel {
 
 	persistArmors() {
 		let self = this;
-		return ko.computed(function () {
+		return ko.computed(() => {
 			let fields = ["name", "armor", "maxDex", "checkPenalty", "cost", "comfortable", "mithral", "selectedEnhancement"];
 			saveArmors(ko.toJSON(self.comparedArmors, fields));
 		});
 	}
 
 	flightBonus(armor, character) {
-		return plusify(parseInt(armor.totalCheckPenalty(), 10) + character.flyingBeforeCheckPenalty());
+		return plusify(totalCheckPenalty(armor) + flyingBeforeCheckPenalty(this.character()));
 	}
 
 	totalArmorRaw = totalArmor

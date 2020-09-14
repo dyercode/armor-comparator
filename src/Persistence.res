@@ -4,10 +4,6 @@ external parseArmors: string => array<Model.armor> = "parse"
 @bs.scope("JSON") @bs.val
 external parseCharacter: string => Model.character = "parse"
 
-let fetchCharacter = {
-  Dom.Storage.localStorage |> Dom.Storage.getItem("character")
-}
-
 let parse = (data, parser) => {
   try {
     Some(parser(data))
@@ -22,7 +18,7 @@ let parse = (data, parser) => {
 }
 
 let loadCharacter = () => {
-  switch fetchCharacter {
+  switch Dom.Storage.localStorage |> Dom.Storage.getItem("character") {
   | Some(s) => parse(s, parseCharacter)->Belt.Option.getWithDefault(Model.defaultCharacter)
   | None => Model.defaultCharacter
   }

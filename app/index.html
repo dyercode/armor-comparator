@@ -36,7 +36,7 @@
                 <input type="number" id="points-in-fly" data-bind="value: character().flyingRanks" />
             </li>
             <li>
-                Base Fly Skill: <span data-bind="text: character().flyingBeforeCheckPenalty"></span>
+                Base Fly Skill: <span data-bind="text: flyingBeforeCheckPenalty(character())"></span>
             </li>
         </ul>
     </section>

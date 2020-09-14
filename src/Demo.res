@@ -12,3 +12,14 @@ let plusify = num => {
 type order =
   | Ascending
   | Descending
+
+let asc = Ascending
+let desc = Descending
+
+let numericSort = (left: int, right: int, order: order): int => {
+  let orderMultiplier = switch order {
+  | Ascending => 1
+  | Descending => -1
+  }
+  left == right ? 0 : (left > right ? 1 : -1) * orderMultiplier
+}

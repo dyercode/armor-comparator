@@ -16,10 +16,12 @@ type enhancement = {
 }
 
 type armor = {
+  name: string,
   armor: int,
   maxDex: int,
+  checkPenalty: int,
   cost: int,
   comfortable: bool,
   mithral: bool,
-  selectedEnhancement: enhancement,
+  selectedEnhancement: int,
 }

@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import { numericSort, DESC } from '../app/js/utils';
+import { numericSort, asc, desc } from '../src/Demo.bs';
+import { totalMaxDex } from '../src/Calculations.bs';
 import { plusify, defaultTo } from '../src/Demo.bs'
 
 
@@ -24,29 +25,48 @@ describe("plusify is a helper function", () => {
 	});
 });
 
+describe('totalMaxDex', () => {
+	const armory = {
+		armor: 0,
+		maxDex: 3,
+		cost: 0,
+		comfortable: false,
+		mithral: false,
+		selectedEnhancement: undefined
+
+	}
+	it('is the raw value when not mithral', () => {
+		expect(totalMaxDex(armory)).to.equal(armory.maxDex);
+	})
+
+	it('is inclreased by 2 for mithral', () => {
+		expect(totalMaxDex({ ...armory, mithral: true })).to.equal(armory.maxDex + 2);
+	})
+})
+
 
 describe('numericSort acts as a numeric comparator', () => {
-	describe('defaulting to ascending', () => {
+	describe('can be ascending', () => {
 		it('greater left number must be 1', () => {
-			expect(numericSort(2, 1)).to.equal(1)
+			expect(numericSort(2, 1, asc)).to.equal(1)
 		})
 		it('lesser left number must be -1', () => {
-			expect(numericSort(1, 2)).to.equal(-1)
+			expect(numericSort(1, 2, asc)).to.equal(-1)
 		})
 		it('equal numbers must be 0', () => {
-			expect(numericSort(1, 1)).to.equal(0)
+			expect(numericSort(1, 1, asc)).to.equal(0)
 		})
 	})
 
 	describe('can be set to descending', () => {
 		it('greater left number must be -1', () => {
-			expect(numericSort(2, 1, DESC)).to.equal(-1)
+			expect(numericSort(2, 1, desc)).to.equal(-1)
 		})
 		it('lesser left number must be 1', () => {
-			expect(numericSort(1, 2, DESC)).to.equal(1)
+			expect(numericSort(1, 2, desc)).to.equal(1)
 		})
 		it('equal numbers must be 0', () => {
-			expect(numericSort(1, 1)).to.equal(0)
+			expect(numericSort(1, 1, desc)).to.equal(0)
 		})
 	})
 })
