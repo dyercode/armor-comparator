@@ -106,5 +106,6 @@ export class CharacterViewModel {
 		return plusify(totalCheckPenalty(armor) + flyingBeforeCheckPenalty(this.character()));
 	}
 
-	totalArmorRaw = totalArmor
+	totalArmorRaw = totalArmor;
+	flyingBeforeCheckPenalty = flyingBeforeCheckPenalty
 }

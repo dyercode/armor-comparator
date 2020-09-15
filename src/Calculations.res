@@ -6,11 +6,10 @@ let totalMaxDex = (armor: Model.armor) => {
   armor.maxDex + (armor.mithral ? 2 : 0)
 }
 
-let robustSelectedEnhancement = (
+let findSelectedEnhancement = (
   enhancements: array<Model.enhancement>,
   armor: Model.armor,
 ): option<Model.enhancement> => {
-  // let bonuses = Js.Array.map((i: Model.enhancement) => i.bonus, enhancements)
   let selected = Js.Array.find(
     (e: Model.enhancement) => e.bonus == armor.selectedEnhancement,
     enhancements,
@@ -19,7 +18,7 @@ let robustSelectedEnhancement = (
 }
 
 let totalCost = (armor: Model.armor, enhancements: array<Model.enhancement>) => {
-  let enhanceCost: int = switch robustSelectedEnhancement(enhancements, armor) {
+  let enhanceCost: int = switch findSelectedEnhancement(enhancements, armor) {
   | Some(e: Model.enhancement) => e.cost
   | None => 0
   }
@@ -27,7 +26,7 @@ let totalCost = (armor: Model.armor, enhancements: array<Model.enhancement>) => 
 }
 
 let totalArmor = (armor: Model.armor, character: Model.character, enhancements) => {
-  let enhancementBonus = switch robustSelectedEnhancement(enhancements, armor) {
+  let enhancementBonus = switch findSelectedEnhancement(enhancements, armor) {
   | Some(b) => b.bonus
   | None => 0
   }
