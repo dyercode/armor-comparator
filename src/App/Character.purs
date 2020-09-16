@@ -23,15 +23,14 @@ defaultCharacter =
 component :: forall q i o m. H.Component HH.HTML q i o m
 component =
   H.mkComponent
-    { initialState: \_ -> defaultCharacter 
+    { initialState: \_ -> defaultCharacter
     , render
-    , eval: H.mkEval $ H.defaultEval {handleAction = handleAction}
+    , eval: H.mkEval $ H.defaultEval { handleAction = handleAction }
     }
 
 handleAction :: forall cs o m. Action → H.HalogenM Character Action cs o m Unit
 handleAction = case _ of
-  DontHaveYet ->
-    H.modify_ \st -> st { dexMod = st.dexMod + 1 }
+  DontHaveYet -> H.modify_ \st -> st { dexMod = st.dexMod + 1 }
 
 data Action
   = DontHaveYet
@@ -39,15 +38,14 @@ data Action
 render :: forall cs m. Character -> H.ComponentHTML Action cs m
 render character =
   HH.section_
-    [
-      HH.h2_ [HH.text "Player Info"]
-      , HH.ul_
-        [
-          HH.li_
-            [
-      HH.input
-        [ HP.type_ HP.InputNumber ]
-
+    [ HH.h2_ [ HH.text "Player Info" ]
+    , HH.ul_
+        [ HH.li_
+            [ HH.label [ HP.for "dexmod" ] [ HH.text "Dex Modifier" ]
+            , HH.input
+                [ HP.type_ HP.InputNumber
+                , HP.id_ "dexmod"
+                ]
             ]
         ]
     ]
