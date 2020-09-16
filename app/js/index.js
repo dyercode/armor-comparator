@@ -1,9 +1,7 @@
-import { enhancementData } from '../static/data/enhancement';
-import { armorData } from '../static/data/armor';
-import { CharacterViewModel } from './armpare';
-import * as ko from 'knockout';
+import { Elm } from '../../main'
 
 document.addEventListener("DOMContentLoaded", () => {
-    const cvm = new CharacterViewModel(armorData, enhancementData);
-    ko.applyBindings(cvm);
+    Elm.Main.init({
+        node: document.getElementById('loadit')
+    });
 });
