@@ -1,51 +1,59 @@
-module App.Armor where 
+module App.Character where
 
 import Prelude
-
-import App.Button (render)
-import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.Events as HE
-import Web.DOM (CharacterData)
+import Halogen.HTML.Properties as HP
 
-type Character =
-  { name :: String
-  , dexMod :: Int
-  , flyingClassSkill :: Boolean
-  , flyingRanks :: Int
-  }
+type Character
+  = { name :: String
+    , dexMod :: Int
+    , flyingClassSkill :: Boolean
+    , flyingRanks :: Int
+    }
 
 defaultCharacter :: Character
-defaultCharacter = 
-    {name: "", dexMod: 0, flyingClassSkill: false, flyingRanks: 0}
+defaultCharacter =
+  { name: ""
+  , dexMod: 0
+  , flyingClassSkill: false
+  , flyingRanks: 0
+  }
 
-component ::  forall q i o m. H.Component HH.HTML q i o m
+component :: forall q i o m. H.Component HH.HTML q i o m
 component =
-    H.mkComponent
-      {
-          initialState: \_ -> {character: defaultCharacter}
-          , render
-          , eval: H.mkEval $ H.defaultEval {}
-      }
+  H.mkComponent
+    { initialState: \_ -> defaultCharacter 
+    , render
+    , eval: H.mkEval $ H.defaultEval {handleAction = handleAction}
+    }
 
-data Action = DontHaveYet
+handleAction :: forall cs o m. Action → H.HalogenM Character Action cs o m Unit
+handleAction = case _ of
+  DontHaveYet ->
+    H.modify_ \st -> st { dexMod = st.dexMod + 1 }
+
+data Action
+  = DontHaveYet
 
 render :: forall cs m. Character -> H.ComponentHTML Action cs m
-render state =
-    HH.section_
-      [ HH.h2 
-      [
-          [HH.ul [
-              HH.li[
-                  HH.label [HH.for_ $ "dexmod"]
-                  HH.input [HH.type_ $ HH.number_,  HH.id_ $ "dexmod"]
-              ]
-          ]]
-      ]]
+render character =
+  HH.input
+    [ HP.type_ HP.InputNumber ]
 
-
+-- HH.section_
+-- [ HH.h2
+-- [ HH.ul
+-- [ HH.li
+-- [ HH.label [ HP.for "dexmod" ] ]
+-- , HH.li
+-- [ 
+-- HH.input [ HP.type_ HP.InputNumber]  
+-- ]
+-- ]
+-- ]
+-- ]
 -- handleAction :: forall cs o m. Action → H.HalogenM State Action cs o m Unit
 -- handleAction = case _ of
 --   Increment ->
-    -- H.modify_ \st -> st { count = st.count + 1 }
+-- H.modify_ \st -> st { count = st.count + 1 }
