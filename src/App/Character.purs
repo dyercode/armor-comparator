@@ -1,16 +1,12 @@
 module App.Character where
 
 import Prelude
+import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
-
-type Character
-  = { name :: String
-    , dexMod :: Int
-    , flyingClassSkill :: Boolean
-    , flyingRanks :: Int
-    }
+import App.Model (Character)
+import Halogen.HTML.Events as HE
 
 defaultCharacter :: Character
 defaultCharacter =
@@ -30,10 +26,10 @@ component =
 
 handleAction :: forall cs o m. Action → H.HalogenM Character Action cs o m Unit
 handleAction = case _ of
-  DontHaveYet -> H.modify_ \st -> st { dexMod = st.dexMod + 1 }
+  DexModChanged n -> H.modify_ \st -> st { dexMod = n }
 
 data Action
-  = DontHaveYet
+  = DexModChanged Int
 
 render :: forall cs m. Character -> H.ComponentHTML Action cs m
 render character =
@@ -45,24 +41,24 @@ render character =
             , HH.input
                 [ HP.type_ HP.InputNumber
                 , HP.id_ "dexmod"
+                , HE.onChange \c -> Just (DexModChanged 5)
+                , HP.value (show character.dexMod)
+                ]
+            , HH.p_ [ HH.text $ "internal value " <> (show character.dexMod) ]
+            ]
+        , HH.li_
+            [ HH.label [ HP.for "fly-class-skill-checkbox" ] [ HH.text "Fly class skill?" ]
+            , HH.input
+                [ HP.type_ HP.InputCheckbox
+                , HP.id_ "fly-class-skill-checkbox"
+                ]
+            ]
+        , HH.li_
+            [ HH.label [ HP.for "points-in-fly" ] [ HH.text "Points in fly" ]
+            , HH.input
+                [ HP.type_ HP.InputNumber
+                , HP.id_ "points-in-fly"
                 ]
             ]
         ]
     ]
-
--- HH.section_
--- [ HH.h2
--- [ HH.ul
--- [ HH.li
--- [ HH.label [ HP.for "dexmod" ] ]
--- , HH.li
--- [ 
--- HH.input [ HP.type_ HP.InputNumber]  
--- ]
--- ]
--- ]
--- ]
--- handleAction :: forall cs o m. Action → H.HalogenM State Action cs o m Unit
--- handleAction = case _ of
---   Increment ->
--- H.modify_ \st -> st { count = st.count + 1 }
