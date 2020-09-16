@@ -38,8 +38,19 @@ data Action
 
 render :: forall cs m. Character -> H.ComponentHTML Action cs m
 render character =
-  HH.input
-    [ HP.type_ HP.InputNumber ]
+  HH.section_
+    [
+      HH.h2_ [HH.text "Player Info"]
+      , HH.ul_
+        [
+          HH.li_
+            [
+      HH.input
+        [ HP.type_ HP.InputNumber ]
+
+            ]
+        ]
+    ]
 
 -- HH.section_
 -- [ HH.h2
