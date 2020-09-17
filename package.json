@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "parcel app/index.html",
     "build": "parcel build src/index.html --public-url .",
-    "build-elm": "elm make src/Main.elm --output=main.js",
+    "build-elm": "elm make src/Main.elm --output=main.js --debug",
     "lint": "eslint app --ext .js,.jsx,.ts,.tsx",
     "test": "mocha --require @babel/register"
   },

@@ -1,8 +1,8 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Attribute, Html, a, button, dd, div, dt, h1, h2, h3, header, input, label, li, p, section, select, text, ul)
-import Html.Attributes exposing (attribute, class, for, href, id, name, type_, value)
+import Html exposing (Attribute, Html, button, div, h1, h2, h3, header, input, label, li, section, select, table, tbody, td, text, th, thead, tr, ul)
+import Html.Attributes exposing (attribute, checked, class, for, id, name, scope, selected, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
 
 
@@ -26,6 +26,8 @@ type Msg
     | ClassSkillToggle Bool
     | FlyingRanks String
     | Null
+    | ArmorSelected String
+    | AddArmor
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -59,15 +61,42 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
+        ArmorSelected name ->
+            let
+                newArm =
+                    List.filter (\a -> a.name == name) armory |> List.head
+            in
+            ( { model | selectedArmor = newArm }, Cmd.none )
+
+        AddArmor ->
+            case model.selectedArmor of
+                Just arm ->
+                    let
+                        newArmor =
+                            EnchantedArmor arm defaultModifications
+                    in
+                    ( { model | enchantedArmors = newArmor :: model.enchantedArmors }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
+
 
 defaultModel : Model
 defaultModel =
-    { dexMod = 0, flyingClassSkill = False, flyingRanks = 0 }
+    { dexMod = 0
+    , flyingClassSkill = False
+    , flyingRanks = 0
+    , autoSort = True
+    , enchantedArmors = []
+    , selectedArmor = List.head armory
+    }
 
 
 characterSection : Character r -> Html Msg
 characterSection character =
-    section [ attribute "id" "Character" ]
+    section [ id "Character" ]
         [ h2 [] [ text "Player Info" ]
         , ul []
             [ li []
@@ -121,13 +150,16 @@ flyingBeforeCheckPenalty c =
 
 view : Model -> Html Msg
 view model =
-    div [] [ characterSection model ]
+    div [] [ characterSection model, armorComponent model ]
 
 
 type alias Model =
     { dexMod : Int
     , flyingClassSkill : Bool
     , flyingRanks : Int
+    , autoSort : Bool
+    , enchantedArmors : List EnchantedArmor
+    , selectedArmor : Maybe Armor
     }
 
 
@@ -148,6 +180,22 @@ type alias Armor =
     }
 
 
+type alias Modifications =
+    { enhancement : Int
+    , mithral : Bool
+    , comfortable : Bool
+    }
+
+
+defaultModifications : Modifications
+defaultModifications =
+    { enhancement = 0, mithral = False, comfortable = False }
+
+
+type EnchantedArmor
+    = EnchantedArmor Armor Modifications
+
+
 armory : List Armor
 armory =
     [ { name = "Full plate", armor = 9, maxDex = 1, checkPenalty = -6, cost = 1500 }
@@ -156,36 +204,87 @@ armory =
     ]
 
 
-armorComponent : Html Msg
-armorComponent =
+armorComponent : Model -> Html Msg
+armorComponent model =
     section [ id "armor" ]
         [ h2 []
             [ text "Armor Comparison" ]
-        , ul []
-            [ li []
-                [ label [ for "compare-selector" ] []
-                , select
-                    [ id "compare-selector"
-                    , value "selectedArmor"
+        , armorAdder model
+        , armorList model.enchantedArmors
+        ]
 
-                    --    options: armors,
-                    --    optionsText: 'name',
-                    --    optionsValue: 'name'">
-                    ]
-                    []
-                , button
-                    [ id "add-armor"
-                    , onClick Null
 
-                    -- addArmor; value: selectedArmor">Add</button>
-                    ]
-                    []
-                , li []
-                    [--             <label for="auto-sort">Auto-sort</label>
-                     --             <input type="checkbox" id="auto-sort" data-bind="checked: autoSort" />
-                    ]
+armorOption : Model -> Armor -> Html Msg
+armorOption model arm =
+    Html.option
+        [ value arm.name
+        , Html.Attributes.selected
+            (case model.selectedArmor of
+                Just n ->
+                    n.name == arm.name
+
+                Nothing ->
+                    False
+            )
+        ]
+        [ text arm.name ]
+
+
+armorAdder : Model -> Html Msg
+armorAdder model =
+    ul []
+        [ li []
+            [ label [ for "compare-selector" ] []
+            , select
+                [ id "compare-selector"
+                , Html.Events.onInput ArmorSelected
+                ]
+                (List.map (armorOption model) armory)
+            , button
+                [ id "add-armor"
+                , onClick AddArmor
+                ]
+                [ text "Add" ]
+            , li []
+                [ label [ for "auto-sort" ] [ text "Auto-sort" ]
+                , input [ type_ "checkbox", id "auto-sort", checked model.autoSort ] []
                 ]
             ]
+        ]
+
+
+armorList : List EnchantedArmor -> Html Msg
+armorList armors =
+    table [ id "armor-comparison-table" ]
+        [ thead []
+            [ tr []
+                [ th [ scope "col" ] [ text "Type" ]
+                , th [ scope "col" ] [ text "Total AC Bonus" ]
+                , th [ scope "col" ] [ text "Armor Check Penalty" ]
+                , th [ scope "col" ] [ text "Cost" ]
+                , th [ scope "col" ] [ text "Fly Skill Bonus" ]
+                , th [ scope "col" ] [ text "Enchantment Level" ]
+                , th [ scope "col" ] [ text "Comfortable" ]
+                , th [ scope "col" ] [ text "Mithral" ]
+                , th [ scope "col" ] []
+                ]
+            ]
+        , tbody [] (List.map armorEntry armors)
+        ]
+
+
+armorEntry : EnchantedArmor -> Html Msg
+armorEntry (EnchantedArmor a e) =
+    tr []
+        [ td [] [ text a.name ]
+        , td [] [ text "total armor raw" ]
+        , td [] [ text "total check penalty" ]
+        , td [] [ text "cost" ]
+        , td [] [ text "flightBonus" ]
+        , td [] [ text "enhancement dropdown" ]
+        , td [] [ input [ type_ "checkbox", checked e.comfortable ] [] ]
+        , td [] [ input [ type_ "checkbox", checked e.mithral ] [] ]
+        , td [] [ text "remove button" ]
         ]
 
 
