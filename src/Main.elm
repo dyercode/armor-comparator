@@ -347,7 +347,7 @@ totalArmorF ea character =
     , min character.dexMod << totalMaxDex
     , getEnhancement
     ]
-        |> List.map (\f -> f ea)
+        |> List.map ((|>) ea)
         |> List.sum
 
 
