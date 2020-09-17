@@ -274,16 +274,16 @@ armorList character armors =
 
 
 armorEntry : Character r -> EnchantedArmor -> Html Msg
-armorEntry character ae =
+armorEntry character ea =
     tr []
-        [ td [] [ text <| getName ae ]
-        , td [] [ text <| plusify <| totalArmor ae character ]
-        , td [] [ text "total check penalty" ]
+        [ td [] [ text <| getName ea ]
+        , td [] [ text <| plusify <| totalArmor ea character ]
+        , td [] [ text <| String.fromInt <| totalCheckPenalty ea ]
         , td [] [ text "cost" ]
         , td [] [ text "flightBonus" ]
         , td [] [ text "enhancement dropdown" ]
-        , td [] [ input [ type_ "checkbox", checked <| isComfortable ae ] [] ]
-        , td [] [ input [ type_ "checkbox", checked <| isMithral ae ] [] ]
+        , td [] [ input [ type_ "checkbox", checked <| isComfortable ea ] [] ]
+        , td [] [ input [ type_ "checkbox", checked <| isMithral ea ] [] ]
         , td [] [ text "remove button" ]
         ]
 
@@ -301,6 +301,11 @@ getArmor (EnchantedArmor a _) =
 getMaxDex : EnchantedArmor -> Int
 getMaxDex (EnchantedArmor a _) =
     a.maxDex
+
+
+getCheckPenalty : EnchantedArmor -> Int
+getCheckPenalty (EnchantedArmor a _) =
+    a.checkPenalty
 
 
 isMithral : EnchantedArmor -> Bool
@@ -334,6 +339,36 @@ totalMaxDex ea =
 totalArmor : EnchantedArmor -> Character r -> Int
 totalArmor ea character =
     getArmor ea + min (totalMaxDex ea) character.dexMod + getEnhancement ea
+
+
+totalArmorF : EnchantedArmor -> Character r -> Int
+totalArmorF ea character =
+    [ getArmor
+    , min character.dexMod << totalMaxDex
+    , getEnhancement
+    ]
+        |> List.map (\f -> f ea)
+        |> List.sum
+
+
+totalCheckPenalty : EnchantedArmor -> Int
+totalCheckPenalty ea =
+    let
+        mithralModifier =
+            if isMithral ea then
+                3
+
+            else
+                0
+
+        comfortableModifier =
+            if isComfortable ea then
+                1
+
+            else
+                0
+    in
+    getCheckPenalty ea + mithralModifier + comfortableModifier
 
 
 plusify : Int -> String
