@@ -210,7 +210,7 @@ armorComponent model =
         [ h2 []
             [ text "Armor Comparison" ]
         , armorAdder model
-        , armorList model.enchantedArmors
+        , armorList model model.enchantedArmors
         ]
 
 
@@ -253,8 +253,8 @@ armorAdder model =
         ]
 
 
-armorList : List EnchantedArmor -> Html Msg
-armorList armors =
+armorList : Character r -> List EnchantedArmor -> Html Msg
+armorList character armors =
     table [ id "armor-comparison-table" ]
         [ thead []
             [ tr []
@@ -269,23 +269,80 @@ armorList armors =
                 , th [ scope "col" ] []
                 ]
             ]
-        , tbody [] (List.map armorEntry armors)
+        , tbody [] (List.map (armorEntry character) armors)
         ]
 
 
-armorEntry : EnchantedArmor -> Html Msg
-armorEntry (EnchantedArmor a e) =
+armorEntry : Character r -> EnchantedArmor -> Html Msg
+armorEntry character ae =
     tr []
-        [ td [] [ text a.name ]
-        , td [] [ text "total armor raw" ]
+        [ td [] [ text <| getName ae ]
+        , td [] [ text <| plusify <| totalArmor ae character ]
         , td [] [ text "total check penalty" ]
         , td [] [ text "cost" ]
         , td [] [ text "flightBonus" ]
         , td [] [ text "enhancement dropdown" ]
-        , td [] [ input [ type_ "checkbox", checked e.comfortable ] [] ]
-        , td [] [ input [ type_ "checkbox", checked e.mithral ] [] ]
+        , td [] [ input [ type_ "checkbox", checked <| isComfortable ae ] [] ]
+        , td [] [ input [ type_ "checkbox", checked <| isMithral ae ] [] ]
         , td [] [ text "remove button" ]
         ]
+
+
+getName : EnchantedArmor -> String
+getName (EnchantedArmor a _) =
+    a.name
+
+
+getArmor : EnchantedArmor -> Int
+getArmor (EnchantedArmor a _) =
+    a.armor
+
+
+getMaxDex : EnchantedArmor -> Int
+getMaxDex (EnchantedArmor a _) =
+    a.maxDex
+
+
+isMithral : EnchantedArmor -> Bool
+isMithral (EnchantedArmor _ m) =
+    m.mithral
+
+
+isComfortable : EnchantedArmor -> Bool
+isComfortable (EnchantedArmor _ m) =
+    m.comfortable
+
+
+getEnhancement : EnchantedArmor -> Int
+getEnhancement (EnchantedArmor _ m) =
+    m.enhancement
+
+
+totalMaxDex : EnchantedArmor -> Int
+totalMaxDex ea =
+    let
+        mithralBonus =
+            if isMithral ea then
+                2
+
+            else
+                0
+    in
+    getMaxDex ea + mithralBonus
+
+
+totalArmor : EnchantedArmor -> Character r -> Int
+totalArmor ea character =
+    getArmor ea + min (totalMaxDex ea) character.dexMod + getEnhancement ea
+
+
+plusify : Int -> String
+plusify i =
+    if i < 0 then
+        String.fromInt i
+
+    else
+        "+" ++ String.fromInt i
 
 
 
