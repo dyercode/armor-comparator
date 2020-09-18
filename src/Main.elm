@@ -1,7 +1,7 @@
-module Main exposing (main)
+module Main exposing (main, plusify)
 
 import Browser
-import Calculates exposing (Armor, Character, Modifications)
+import Calculates exposing (Armor, Character, EnchantedArmor(..), Modifications, flyingBeforeCheckPenalty, getName, isComfortable, isMithral, totalArmor, totalCheckPenalty)
 import Html exposing (Html, button, div, h2, input, label, li, section, select, table, tbody, td, text, th, thead, tr, ul)
 import Html.Attributes exposing (checked, for, id, name, scope, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
@@ -86,9 +86,9 @@ update msg model =
                 ( Just arm, Just uuid ) ->
                     let
                         newArmor =
-                            EnchantedArmor arm defaultModifications (Uuid.toString uuid)
+                            EnchantedArmor arm defaultModifications
                     in
-                    ( { model | enchantedArmors = newArmor :: model.enchantedArmors }, Cmd.none )
+                    ( { model | enchantedArmors = ( newArmor, Uuid.toString uuid ) :: model.enchantedArmors }, Cmd.none )
                         |> andThen update NewUuid
 
                 _ ->
@@ -150,19 +150,6 @@ characterSection character =
         ]
 
 
-flyingBeforeCheckPenalty : Character r -> Int
-flyingBeforeCheckPenalty c =
-    let
-        pointsFromClass =
-            if c.flyingClassSkill && c.flyingRanks > 0 then
-                3
-
-            else
-                0
-    in
-    c.dexMod + pointsFromClass + c.flyingRanks
-
-
 view : Model -> Html Msg
 view model =
     div [] [ characterSection model, armorComponent model ]
@@ -173,7 +160,7 @@ type alias Model =
     , flyingClassSkill : Bool
     , flyingRanks : Int
     , autoSort : Bool
-    , enchantedArmors : List EnchantedArmor
+    , enchantedArmors : List ( EnchantedArmor, String )
     , selectedArmor : Maybe Armor
     , currentSeed : Seed
     , currentUuid : Maybe Uuid.Uuid
@@ -242,7 +229,7 @@ armorAdder model =
         ]
 
 
-armorList : Character r -> List EnchantedArmor -> Html Msg
+armorList : Character r -> List ( EnchantedArmor, String ) -> Html Msg
 armorList character armors =
     table [ id "armor-comparison-table" ]
         [ thead []
@@ -262,8 +249,8 @@ armorList character armors =
         ]
 
 
-armorEntry : Character r -> EnchantedArmor -> Html Msg
-armorEntry character ea =
+armorEntry : Character r -> ( EnchantedArmor, String ) -> Html Msg
+armorEntry character ( ea, id ) =
     tr []
         [ td [] [ text <| getName ea ]
         , td [] [ text <| plusify <| totalArmor ea character ]
@@ -273,68 +260,8 @@ armorEntry character ea =
         , td [] [ text "enhancement dropdown" ]
         , td [] [ input [ type_ "checkbox", checked <| isComfortable ea ] [] ]
         , td [] [ input [ type_ "checkbox", checked <| isMithral ea ] [] ]
-        , td [] [ text <| "remove button for " ++ getId ea ]
+        , td [] [ text <| "remove button for " ++ id ]
         ]
-
-
-getId : EnchantedArmor -> String
-getId (EnchantedArmor _ _ id) =
-    id
-
-
-getName : EnchantedArmor -> String
-getName (EnchantedArmor a _ _) =
-    a.name
-
-
-getArmor : EnchantedArmor -> Int
-getArmor (EnchantedArmor a _ _) =
-    a.armor
-
-
-getMaxDex : EnchantedArmor -> Int
-getMaxDex (EnchantedArmor a _ _) =
-    a.maxDex
-
-
-getCheckPenalty : EnchantedArmor -> Int
-getCheckPenalty (EnchantedArmor a _ _) =
-    a.checkPenalty
-
-
-isMithral : EnchantedArmor -> Bool
-isMithral (EnchantedArmor _ m _) =
-    m.mithral
-
-
-isComfortable : EnchantedArmor -> Bool
-isComfortable (EnchantedArmor _ m _) =
-    m.comfortable
-
-
-getEnhancement : EnchantedArmor -> Int
-getEnhancement (EnchantedArmor _ m _) =
-    m.enhancement
-
-
-totalCheckPenalty : EnchantedArmor -> Int
-totalCheckPenalty ea =
-    let
-        mithralModifier =
-            if isMithral ea then
-                3
-
-            else
-                0
-
-        comfortableModifier =
-            if isComfortable ea then
-                1
-
-            else
-                0
-    in
-    getCheckPenalty ea + mithralModifier + comfortableModifier
 
 
 plusify : Int -> String
