@@ -4,9 +4,13 @@ import Browser
 import Html exposing (Attribute, Html, button, div, h1, h2, h3, header, input, label, li, section, select, table, tbody, td, text, th, thead, tr, ul)
 import Html.Attributes exposing (attribute, checked, class, for, id, name, scope, selected, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
+import List exposing (map)
+import Prng.Uuid as Uuid
+import Random.Pcg.Extended exposing (Seed, initialSeed, step)
+import Update.Extra exposing (andThen, updateModel)
 
 
-main : Program () Model Msg
+main : Program ( Int, List Int ) Model Msg
 main =
     Browser.element
         { init = init
@@ -16,9 +20,20 @@ main =
         }
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( defaultModel, Cmd.none )
+init : ( Int, List Int ) -> ( Model, Cmd Msg )
+init ( seed, seedExtension ) =
+    ( { dexMod = 0
+      , flyingClassSkill = False
+      , flyingRanks = 0
+      , autoSort = True
+      , enchantedArmors = []
+      , selectedArmor = List.head armory
+      , currentSeed = initialSeed seed seedExtension
+      , currentUuid = Nothing
+      }
+    , Cmd.none
+    )
+        |> andThen update NewUuid
 
 
 type Msg
@@ -28,6 +43,7 @@ type Msg
     | Null
     | ArmorSelected String
     | AddArmor
+    | NewUuid
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -69,35 +85,37 @@ update msg model =
             ( { model | selectedArmor = newArm }, Cmd.none )
 
         AddArmor ->
-            case model.selectedArmor of
-                Just arm ->
+            case ( model.selectedArmor, model.currentUuid ) of
+                ( Just arm, Just uuid ) ->
                     let
                         newArmor =
-                            EnchantedArmor arm defaultModifications
+                            EnchantedArmor arm defaultModifications (Uuid.toString uuid)
                     in
-                    ( { model | enchantedArmors = newArmor :: model.enchantedArmors }
-                    , Cmd.none
-                    )
+                    ( { model | enchantedArmors = newArmor :: model.enchantedArmors }, Cmd.none )
+                        |> andThen update NewUuid
 
-                Nothing ->
+                _ ->
                     ( model, Cmd.none )
 
-
-defaultModel : Model
-defaultModel =
-    { dexMod = 0
-    , flyingClassSkill = False
-    , flyingRanks = 0
-    , autoSort = True
-    , enchantedArmors = []
-    , selectedArmor = List.head armory
-    }
+        NewUuid ->
+            let
+                ( newUuid, newSeed ) =
+                    step Uuid.generator model.currentSeed
+            in
+            -- 2.: Store the new seed
+            ( { model
+                | currentUuid = Just newUuid
+                , currentSeed = newSeed
+              }
+            , Cmd.none
+            )
 
 
 characterSection : Character r -> Html Msg
 characterSection character =
     section [ id "Character" ]
-        [ h2 [] [ text "Player Info" ]
+        [ h2 []
+            [ text "Player Info" ]
         , ul []
             [ li []
                 [ label [ for "dexmod" ] [ text "Dex Modifier" ]
@@ -160,6 +178,8 @@ type alias Model =
     , autoSort : Bool
     , enchantedArmors : List EnchantedArmor
     , selectedArmor : Maybe Armor
+    , currentSeed : Seed
+    , currentUuid : Maybe Uuid.Uuid
     }
 
 
@@ -193,7 +213,7 @@ defaultModifications =
 
 
 type EnchantedArmor
-    = EnchantedArmor Armor Modifications
+    = EnchantedArmor Armor Modifications String
 
 
 armory : List Armor
@@ -239,7 +259,7 @@ armorAdder model =
                 [ id "compare-selector"
                 , Html.Events.onInput ArmorSelected
                 ]
-                (List.map (armorOption model) armory)
+                (map (armorOption model) armory)
             , button
                 [ id "add-armor"
                 , onClick AddArmor
@@ -269,7 +289,7 @@ armorList character armors =
                 , th [ scope "col" ] []
                 ]
             ]
-        , tbody [] (List.map (armorEntry character) armors)
+        , tbody [] (map (armorEntry character) armors)
         ]
 
 
@@ -284,42 +304,47 @@ armorEntry character ea =
         , td [] [ text "enhancement dropdown" ]
         , td [] [ input [ type_ "checkbox", checked <| isComfortable ea ] [] ]
         , td [] [ input [ type_ "checkbox", checked <| isMithral ea ] [] ]
-        , td [] [ text "remove button" ]
+        , td [] [ text <| "remove button for " ++ getId ea ]
         ]
 
 
+getId : EnchantedArmor -> String
+getId (EnchantedArmor _ _ id) =
+    id
+
+
 getName : EnchantedArmor -> String
-getName (EnchantedArmor a _) =
+getName (EnchantedArmor a _ _) =
     a.name
 
 
 getArmor : EnchantedArmor -> Int
-getArmor (EnchantedArmor a _) =
+getArmor (EnchantedArmor a _ _) =
     a.armor
 
 
 getMaxDex : EnchantedArmor -> Int
-getMaxDex (EnchantedArmor a _) =
+getMaxDex (EnchantedArmor a _ _) =
     a.maxDex
 
 
 getCheckPenalty : EnchantedArmor -> Int
-getCheckPenalty (EnchantedArmor a _) =
+getCheckPenalty (EnchantedArmor a _ _) =
     a.checkPenalty
 
 
 isMithral : EnchantedArmor -> Bool
-isMithral (EnchantedArmor _ m) =
+isMithral (EnchantedArmor _ m _) =
     m.mithral
 
 
 isComfortable : EnchantedArmor -> Bool
-isComfortable (EnchantedArmor _ m) =
+isComfortable (EnchantedArmor _ m _) =
     m.comfortable
 
 
 getEnhancement : EnchantedArmor -> Int
-getEnhancement (EnchantedArmor _ m) =
+getEnhancement (EnchantedArmor _ m _) =
     m.enhancement
 
 
@@ -338,7 +363,9 @@ totalMaxDex ea =
 
 totalArmor : EnchantedArmor -> Character r -> Int
 totalArmor ea character =
-    getArmor ea + min (totalMaxDex ea) character.dexMod + getEnhancement ea
+    getArmor ea
+        + min (totalMaxDex ea) character.dexMod
+        + getEnhancement ea
 
 
 totalArmorF : EnchantedArmor -> Character r -> Int
@@ -347,7 +374,7 @@ totalArmorF ea character =
     , min character.dexMod << totalMaxDex
     , getEnhancement
     ]
-        |> List.map ((|>) ea)
+        |> map ((|>) ea)
         |> List.sum
 
 
