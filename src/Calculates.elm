@@ -1,4 +1,16 @@
-module Calculates exposing (..)
+module Calculates exposing
+    ( Armor
+    , Character
+    , EnchantedArmor(..)
+    , Modifications
+    , flyingBeforeCheckPenalty
+    , getName
+    , isComfortable
+    , isMithral
+    , totalArmor
+    , totalCheckPenalty
+    , totalMaxDex
+    )
 
 import List exposing (map)
 
