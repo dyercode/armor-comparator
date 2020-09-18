@@ -1,13 +1,13 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Attribute, Html, button, div, h1, h2, h3, header, input, label, li, section, select, table, tbody, td, text, th, thead, tr, ul)
-import Html.Attributes exposing (attribute, checked, class, for, id, name, scope, selected, type_, value)
+import Html exposing (Attribute, Html, button, div, h2, input, label, li, section, select, table, tbody, td, text, th, thead, tr, ul)
+import Html.Attributes exposing (checked, for, id, name, scope, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
 import List exposing (map)
 import Prng.Uuid as Uuid
 import Random.Pcg.Extended exposing (Seed, initialSeed, step)
-import Update.Extra exposing (andThen, updateModel)
+import Update.Extra exposing (andThen)
 
 
 main : Program ( Int, List Int ) Model Msg
