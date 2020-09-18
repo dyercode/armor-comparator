@@ -1,9 +1,9 @@
 module Example exposing (..)
 
+import Calculates exposing (Armor, Character, EnchantedArmor(..), Modifications, flyingBeforeCheckPenalty, totalArmor, totalMaxDex)
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, bool, int, intRange, list, string)
-import Main exposing (EnchantedArmor, defaultModifications, flyingBeforeCheckPenalty, plusify, totalArmor, totalMaxDex)
-import Model exposing (Armor, Character, Modifications)
+import Main exposing (plusify)
 import Test exposing (..)
 
 
@@ -25,15 +25,22 @@ tmdSuite =
             , checkPenalty = -6
             , cost = 1500
             }
+
+        mod : Modifications
+        mod =
+            { enhancement = 0
+            , mithral = False
+            , comfortable = False
+            }
     in
     describe "totalMaxDex"
         [ fuzz int "is the raw value when not mithral" <|
             \num ->
-                totalMaxDex (Main.EnchantedArmor { someArmor | maxDex = num } defaultModifications "2")
+                totalMaxDex (EnchantedArmor { someArmor | maxDex = num } mod)
                     |> Expect.equal num
         , fuzz int "is inclreased by 2 for mithral" <|
             \num ->
-                totalMaxDex (Main.EnchantedArmor { someArmor | maxDex = num } { defaultModifications | mithral = True } "1")
+                totalMaxDex (EnchantedArmor { someArmor | maxDex = num } { mod | mithral = True })
                     |> Expect.equal (num + 2)
         ]
 
@@ -89,7 +96,7 @@ taSuite =
     describe "totalArmor"
         [ test "sum of armor and dex and enhancementbonus" <|
             \() ->
-                totalArmor (Main.EnchantedArmor someArmor { mod | enhancement = 1 } "1") { character | dexMod = 1 }
+                totalArmor (EnchantedArmor someArmor { mod | enhancement = 1 }) { character | dexMod = 1 }
                     |> Expect.equal 11
         , todo "dexMod is capped by maxdex"
         ]
