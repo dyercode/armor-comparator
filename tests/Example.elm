@@ -2,7 +2,8 @@ module Example exposing (..)
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, bool, int, intRange, list, string)
-import Main exposing (Armor, EnchantedArmor, Modifications, defaultModifications, flyingBeforeCheckPenalty, plusify, totalMaxDex)
+import Main exposing (EnchantedArmor, defaultModifications, flyingBeforeCheckPenalty, plusify, totalArmor, totalMaxDex)
+import Model exposing (Armor, Character, Modifications)
 import Test exposing (..)
 
 
@@ -17,7 +18,6 @@ plusSuite =
 
 tmdSuite =
     let
-        someArmor : Armor
         someArmor =
             { name = "Full plate"
             , armor = 9
@@ -59,4 +59,37 @@ fbcpSuite =
             \isClass dex ->
                 flyingBeforeCheckPenalty { character | dexMod = dex, flyingClassSkill = isClass }
                     |> Expect.equal dex
+        ]
+
+
+taSuite =
+    let
+        character =
+            { dexMod = 0
+            , flyingClassSkill = False
+            , flyingRanks = 0
+            }
+
+        someArmor : Armor
+        someArmor =
+            { name = "Full plate"
+            , armor = 9
+            , maxDex = 1
+            , checkPenalty = -6
+            , cost = 1500
+            }
+
+        mod : Modifications
+        mod =
+            { enhancement = 0
+            , mithral = False
+            , comfortable = False
+            }
+    in
+    describe "totalArmor"
+        [ test "sum of armor and dex and enhancementbonus" <|
+            \() ->
+                totalArmor (Main.EnchantedArmor someArmor { mod | enhancement = 1 } "1") { character | dexMod = 1 }
+                    |> Expect.equal 11
+        , todo "dexMod is capped by maxdex"
         ]
