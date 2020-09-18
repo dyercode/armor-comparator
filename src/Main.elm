@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Main exposing (..)
 
 import Browser
 import Html exposing (Attribute, Html, button, div, h1, h2, h3, header, input, label, li, section, select, table, tbody, td, text, th, thead, tr, ul)
@@ -361,15 +361,15 @@ totalMaxDex ea =
     getMaxDex ea + mithralBonus
 
 
-totalArmor : EnchantedArmor -> Character r -> Int
-totalArmor ea character =
+totalArmorOld : EnchantedArmor -> Character r -> Int
+totalArmorOld ea character =
     getArmor ea
         + min (totalMaxDex ea) character.dexMod
         + getEnhancement ea
 
 
-totalArmorF : EnchantedArmor -> Character r -> Int
-totalArmorF ea character =
+totalArmor : EnchantedArmor -> Character r -> Int
+totalArmor ea character =
     [ getArmor
     , min character.dexMod << totalMaxDex
     , getEnhancement
