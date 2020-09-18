@@ -1,7 +1,8 @@
-module Main exposing (..)
+module Main exposing (main)
 
 import Browser
-import Html exposing (Attribute, Html, button, div, h2, input, label, li, section, select, table, tbody, td, text, th, thead, tr, ul)
+import Calculates exposing (Armor, Character, Modifications)
+import Html exposing (Html, button, div, h2, input, label, li, section, select, table, tbody, td, text, th, thead, tr, ul)
 import Html.Attributes exposing (checked, for, id, name, scope, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
 import List exposing (map)
@@ -40,7 +41,6 @@ type Msg
     = DexMod String
     | ClassSkillToggle Bool
     | FlyingRanks String
-    | Null
     | ArmorSelected String
     | AddArmor
     | NewUuid
@@ -49,9 +49,6 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
-        Null ->
-            ( model, Cmd.none )
-
         DexMod str ->
             case String.toInt str of
                 Just num ->
@@ -183,37 +180,9 @@ type alias Model =
     }
 
 
-type alias Character r =
-    { r
-        | dexMod : Int
-        , flyingClassSkill : Bool
-        , flyingRanks : Int
-    }
-
-
-type alias Armor =
-    { name : String
-    , armor : Int
-    , maxDex : Int
-    , checkPenalty : Int
-    , cost : Int
-    }
-
-
-type alias Modifications =
-    { enhancement : Int
-    , mithral : Bool
-    , comfortable : Bool
-    }
-
-
 defaultModifications : Modifications
 defaultModifications =
     { enhancement = 0, mithral = False, comfortable = False }
-
-
-type EnchantedArmor
-    = EnchantedArmor Armor Modifications String
 
 
 armory : List Armor
@@ -346,36 +315,6 @@ isComfortable (EnchantedArmor _ m _) =
 getEnhancement : EnchantedArmor -> Int
 getEnhancement (EnchantedArmor _ m _) =
     m.enhancement
-
-
-totalMaxDex : EnchantedArmor -> Int
-totalMaxDex ea =
-    let
-        mithralBonus =
-            if isMithral ea then
-                2
-
-            else
-                0
-    in
-    getMaxDex ea + mithralBonus
-
-
-totalArmorOld : EnchantedArmor -> Character r -> Int
-totalArmorOld ea character =
-    getArmor ea
-        + min (totalMaxDex ea) character.dexMod
-        + getEnhancement ea
-
-
-totalArmor : EnchantedArmor -> Character r -> Int
-totalArmor ea character =
-    [ getArmor
-    , min character.dexMod << totalMaxDex
-    , getEnhancement
-    ]
-        |> map ((|>) ea)
-        |> List.sum
 
 
 totalCheckPenalty : EnchantedArmor -> Int
