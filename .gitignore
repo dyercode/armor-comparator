@@ -11,3 +11,7 @@ report.xml
 .cache
 .idea
 .vscode
+.metals
+elm-stuff
+output
+*.log
