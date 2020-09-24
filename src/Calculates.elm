@@ -4,6 +4,8 @@ module Calculates exposing
     , EnchantedArmor(..)
     , Modifications
     , flyingBeforeCheckPenalty
+    , getCost
+    , getEnhancement
     , getName
     , isComfortable
     , isMithral
@@ -41,6 +43,11 @@ type alias Modifications =
     , mithral : Bool
     , comfortable : Bool
     }
+
+
+getCost : EnchantedArmor -> Int
+getCost (EnchantedArmor armor modification) =
+    armor.cost + (modification.enhancement * modification.enhancement * 1000)
 
 
 getName : EnchantedArmor -> String

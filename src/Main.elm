@@ -1,7 +1,21 @@
 module Main exposing (main, plusify)
 
 import Browser
-import Calculates exposing (Armor, Character, EnchantedArmor(..), Modifications, flyingBeforeCheckPenalty, getName, isComfortable, isMithral, totalArmor, totalCheckPenalty)
+import Calculates
+    exposing
+        ( Armor
+        , Character
+        , EnchantedArmor(..)
+        , Modifications
+        , flyingBeforeCheckPenalty
+        , getCost
+        , getEnhancement
+        , getName
+        , isComfortable
+        , isMithral
+        , totalArmor
+        , totalCheckPenalty
+        )
 import Html exposing (Html, button, div, h2, input, label, li, section, select, table, tbody, td, text, th, thead, tr, ul)
 import Html.Attributes exposing (checked, for, id, name, scope, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
@@ -44,15 +58,16 @@ type Msg
     | ArmorSelected String
     | AddArmor
     | NewUuid
+    | ChangeEnhancement String String
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
-        DexMod str ->
-            case String.toInt str of
-                Just num ->
-                    ( { model | dexMod = num }
+        DexMod input ->
+            case String.toInt input of
+                Just newDexMod ->
+                    ( { model | dexMod = newDexMod }
                     , Cmd.none
                     )
 
@@ -90,6 +105,31 @@ update msg model =
                     in
                     ( { model | enchantedArmors = ( newArmor, Uuid.toString uuid ) :: model.enchantedArmors }, Cmd.none )
                         |> andThen update NewUuid
+
+                _ ->
+                    ( model, Cmd.none )
+
+        ChangeEnhancement id newValue ->
+            let
+                parsedEnhancement =
+                    String.toInt newValue
+            in
+            case ( id, parsedEnhancement ) of
+                ( uuid, Just newEnhancement ) ->
+                    ( { model
+                        | enchantedArmors =
+                            List.map
+                                (\( EnchantedArmor armor mod, i ) ->
+                                    if i == uuid then
+                                        ( EnchantedArmor armor { mod | enhancement = newEnhancement }, i )
+
+                                    else
+                                        ( EnchantedArmor armor mod, i )
+                                )
+                                model.enchantedArmors
+                      }
+                    , Cmd.none
+                    )
 
                 _ ->
                     ( model, Cmd.none )
@@ -152,7 +192,7 @@ characterSection character =
 
 view : Model -> Html Msg
 view model =
-    div [] [ characterSection model, armorComponent model ]
+    div [] [ characterSection model, armorSection model ]
 
 
 type alias Model =
@@ -180,8 +220,8 @@ armory =
     ]
 
 
-armorComponent : Model -> Html Msg
-armorComponent model =
+armorSection : Model -> Html Msg
+armorSection model =
     section [ id "armor" ]
         [ h2 []
             [ text "Armor Comparison" ]
@@ -250,16 +290,31 @@ armorList character armors =
 
 
 armorEntry : Character r -> ( EnchantedArmor, String ) -> Html Msg
-armorEntry character ( ea, id ) =
+armorEntry character ( enchantedArmor, id ) =
     tr []
-        [ td [] [ text <| getName ea ]
-        , td [] [ text <| plusify <| totalArmor ea character ]
-        , td [] [ text <| String.fromInt <| totalCheckPenalty ea ]
-        , td [] [ text "cost" ]
+        [ td [] [ text <| getName enchantedArmor ]
+        , td [] [ text <| plusify <| totalArmor enchantedArmor character ]
+        , td [] [ text <| String.fromInt <| totalCheckPenalty enchantedArmor ]
+        , td [] [ text <| String.fromInt <| getCost enchantedArmor ]
         , td [] [ text "flightBonus" ]
-        , td [] [ text "enhancement dropdown" ]
-        , td [] [ input [ type_ "checkbox", checked <| isComfortable ea ] [] ]
-        , td [] [ input [ type_ "checkbox", checked <| isMithral ea ] [] ]
+        , td []
+            -- [].map (() => )
+            [ select
+                [ Html.Events.onInput (ChangeEnhancement id) ]
+                (List.map
+                    (\i ->
+                        Html.option
+                            [ value (String.fromInt (getEnhancement enchantedArmor))
+                            , Html.Attributes.selected
+                                (getEnhancement enchantedArmor == i)
+                            ]
+                            [ text ("+" ++ String.fromInt i) ]
+                    )
+                    (List.range 0 5)
+                )
+            ]
+        , td [] [ input [ type_ "checkbox", checked <| isComfortable enchantedArmor ] [] ]
+        , td [] [ input [ type_ "checkbox", checked <| isMithral enchantedArmor ] [] ]
         , td [] [ text <| "remove button for " ++ id ]
         ]
 
