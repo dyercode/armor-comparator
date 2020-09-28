@@ -253,7 +253,7 @@ armorAdder model =
             [ label [ for "compare-selector" ] []
             , select
                 [ id "compare-selector"
-                , Html.Events.onInput ArmorSelected
+                , onInput ArmorSelected
                 ]
                 (map (armorOption model) armory)
             , button
@@ -298,17 +298,16 @@ armorEntry character ( enchantedArmor, id ) =
         , td [] [ text <| String.fromInt <| getCost enchantedArmor ]
         , td [] [ text "flightBonus" ]
         , td []
-            -- [].map (() => )
             [ select
-                [ Html.Events.onInput (ChangeEnhancement id) ]
+                [ onInput (ChangeEnhancement id) ]
                 (List.map
-                    (\i ->
+                    (\index ->
                         Html.option
-                            [ value (String.fromInt (getEnhancement enchantedArmor))
+                            [ value (String.fromInt index)
                             , Html.Attributes.selected
-                                (getEnhancement enchantedArmor == i)
+                                (getEnhancement enchantedArmor == index)
                             ]
-                            [ text ("+" ++ String.fromInt i) ]
+                            [ text ("+" ++ String.fromInt index) ]
                     )
                     (List.range 0 5)
                 )
