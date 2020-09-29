@@ -331,6 +331,23 @@ armorList character armors =
         ]
 
 
+enchantmentSelect : EnchantedArmor -> String -> Html Msg
+enchantmentSelect enchantedArmor armorId =
+    select
+        [ onInput (ChangeEnhancement armorId) ]
+        (List.map
+            (\index ->
+                Html.option
+                    [ value (String.fromInt index)
+                    , Html.Attributes.selected
+                        (getEnhancement enchantedArmor == index)
+                    ]
+                    [ text ("+" ++ String.fromInt index) ]
+            )
+            (List.range 0 5)
+        )
+
+
 armorEntry : Character r -> ( EnchantedArmor, String ) -> Html Msg
 armorEntry character ( enchantedArmor, armorId ) =
     tr []
@@ -338,22 +355,9 @@ armorEntry character ( enchantedArmor, armorId ) =
         , td [] [ text <| plusify <| totalArmor enchantedArmor character ]
         , td [] [ text <| String.fromInt <| totalCheckPenalty enchantedArmor ]
         , td [] [ text <| String.fromInt <| getCost enchantedArmor ]
-        , td [] [ text <| String.fromInt <| flightBonus enchantedArmor character ]
+        , td [] [ text <| plusify <| flightBonus enchantedArmor character ]
         , td []
-            [ select
-                [ onInput (ChangeEnhancement armorId) ]
-                (List.map
-                    (\index ->
-                        Html.option
-                            [ value (String.fromInt index)
-                            , Html.Attributes.selected
-                                (getEnhancement enchantedArmor == index)
-                            ]
-                            [ text ("+" ++ String.fromInt index) ]
-                    )
-                    (List.range 0 5)
-                )
-            ]
+            [ enchantmentSelect enchantedArmor armorId ]
         , td []
             [ input
                 [ type_ "checkbox"
@@ -387,29 +391,3 @@ plusify i =
 
     else
         "+" ++ String.fromInt i
-
-
-
---     </ul>
---     <table id="armor-comparison-table">
---         <thead>
---             <tr>
---                 <th scope="col">Type</th>
---                 <th scope="col">Total AC Bonus</th>
---                 <th scope="col">Fly Skill Bonus</th>
---                 <th scope="col">Comfortable</th>
---                 <th scope="col">Mithral</th>
---             </tr>
---         </thead>
---         <tbody data-bind="foreach: autoSort() ? sortedArmors() : comparedArmors">
---             <tr>
---                 <td><span data-bind="text: name" /></td>
---                 <td data-bind="text: $parent.totalArmorRaw($data, $parent.character())"></td>
---                 <td data-bind="text: totalCheckPenalty()"></td>
---                 <td><span data-bind="text: totalCost($parent.enhancements)"></span>gp</td>
---                 <td data-bind="text: $parent.flightBonus($data, $parent.character())"></td>
---                 <td><input type="checkbox" data-bind="checked: comfortable" /></td>
---                 <td><input type="checkbox" data-bind="checked: mithral" /></td>
---             </tr>
---         </tbody>
---     </table>
