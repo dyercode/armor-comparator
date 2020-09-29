@@ -4,6 +4,7 @@ import Calculates exposing (Armor, Character, EnchantedArmor(..), Modifications,
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, bool, int, intRange, list, string)
 import Main exposing (plusify)
+import Random exposing (maxInt)
 import Test exposing (..)
 
 
@@ -98,7 +99,10 @@ taSuite =
             \() ->
                 totalArmor (EnchantedArmor someArmor { mod | enhancement = 1 }) { character | dexMod = 1 }
                     |> Expect.equal 11
-        , todo "dexMod is capped by maxdex"
+        , fuzz2 int (intRange 0 maxInt) "dexMod is capped by maxdex" <|
+            \dexMod maxDex ->
+                totalArmor (EnchantedArmor { someArmor | maxDex = maxDex, armor = 0 } mod) { character | dexMod = dexMod + maxDex }
+                    |> Expect.atMost maxDex
         ]
 
 
