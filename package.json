@@ -20,11 +20,8 @@
     "dev": "parcel app/index.html",
     "build": "parcel build src/index.html --public-url .",
     "build-elm": "elm make src/Main.elm --output=main.js --debug",
-    "lint": "eslint app --ext .js,.jsx,.ts,.tsx",
-    "test": "mocha --require @babel/register"
+    "lint": "elm-analyse",
+    "test": "elm-test"
   },
-  "dependencies": {
-    "knockout": "^3.5.1",
-    "knockout-mapping": "^2.6.0"
-  }
+  "dependencies": {}
 }
