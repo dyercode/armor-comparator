@@ -76,24 +76,18 @@ update msg model =
         DexMod input ->
             case String.toInt input of
                 Just newDexMod ->
-                    ( { model | dexMod = newDexMod }
-                    , Cmd.none
-                    )
+                    ( { model | dexMod = newDexMod }, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )
 
         ClassSkillToggle b ->
-            ( { model | flyingClassSkill = b }
-            , Cmd.none
-            )
+            ( { model | flyingClassSkill = b }, Cmd.none )
 
         FlyingRanks str ->
             case String.toInt str of
                 Just num ->
-                    ( { model | flyingRanks = num }
-                    , Cmd.none
-                    )
+                    ( { model | flyingRanks = num }, Cmd.none )
 
                 Nothing ->
                     ( model, Cmd.none )
