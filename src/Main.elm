@@ -158,7 +158,6 @@ update msg model =
                 ( newUuid, newSeed ) =
                     step Uuid.generator model.currentSeed
             in
-            -- 2.: Store the new seed
             ( { model
                 | currentUuid = Just newUuid
                 , currentSeed = newSeed

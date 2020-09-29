@@ -122,13 +122,6 @@ totalMaxDex ea =
     getMaxDex ea + mithralBonus
 
 
-totalArmorOld : EnchantedArmor -> Character r -> Int
-totalArmorOld ea character =
-    getArmor ea
-        + min (totalMaxDex ea) character.dexMod
-        + getEnhancement ea
-
-
 totalArmor : EnchantedArmor -> Character r -> Int
 totalArmor ea character =
     [ getArmor
@@ -160,13 +153,13 @@ totalCheckPenalty ea =
 
 
 flyingBeforeCheckPenalty : Character r -> Int
-flyingBeforeCheckPenalty c =
+flyingBeforeCheckPenalty character =
     let
         pointsFromClass =
-            if c.flyingClassSkill && c.flyingRanks > 0 then
+            if character.flyingClassSkill && character.flyingRanks > 0 then
                 3
 
             else
                 0
     in
-    c.dexMod + pointsFromClass + c.flyingRanks
+    character.dexMod + pointsFromClass + character.flyingRanks
