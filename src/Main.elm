@@ -7,6 +7,7 @@ import Calculates
         , Character
         , EnchantedArmor(..)
         , Modifications
+        , flightBonus
         , flyingBeforeCheckPenalty
         , getCost
         , getEnhancement
@@ -14,6 +15,7 @@ import Calculates
         , isComfortable
         , isMithral
         , setComfortable
+        , setMithral
         , totalArmor
         , totalCheckPenalty
         )
@@ -61,6 +63,7 @@ type Msg
     | NewUuid
     | ChangeEnhancement String String
     | ChangeComfortable String Bool
+    | ChangeMithral String Bool
     | Remove String
 
 
@@ -144,6 +147,22 @@ update msg model =
                         (\( ea, id ) ->
                             if id == armorId then
                                 ( setComfortable ea newValue, id )
+
+                            else
+                                ( ea, id )
+                        )
+                        model.enchantedArmors
+              }
+            , Cmd.none
+            )
+
+        ChangeMithral armorId newValue ->
+            ( { model
+                | enchantedArmors =
+                    List.map
+                        (\( ea, id ) ->
+                            if id == armorId then
+                                ( setMithral ea newValue, id )
 
                             else
                                 ( ea, id )
@@ -319,7 +338,7 @@ armorEntry character ( enchantedArmor, armorId ) =
         , td [] [ text <| plusify <| totalArmor enchantedArmor character ]
         , td [] [ text <| String.fromInt <| totalCheckPenalty enchantedArmor ]
         , td [] [ text <| String.fromInt <| getCost enchantedArmor ]
-        , td [] [ text "flightBonus" ]
+        , td [] [ text <| String.fromInt <| flightBonus enchantedArmor character ]
         , td []
             [ select
                 [ onInput (ChangeEnhancement armorId) ]
@@ -343,7 +362,14 @@ armorEntry character ( enchantedArmor, armorId ) =
                 ]
                 []
             ]
-        , td [] [ input [ type_ "checkbox", checked <| isMithral enchantedArmor ] [] ]
+        , td []
+            [ input
+                [ type_ "checkbox"
+                , checked <| isMithral enchantedArmor
+                , onCheck (ChangeMithral armorId)
+                ]
+                []
+            ]
         , td []
             [ button
                 [ id ("remove-" ++ armorId)
@@ -370,8 +396,6 @@ plusify i =
 --             <tr>
 --                 <th scope="col">Type</th>
 --                 <th scope="col">Total AC Bonus</th>
---                 <th scope="col">Armor Check Penalty</th>
---                 <th scope="col">Cost</th>
 --                 <th scope="col">Fly Skill Bonus</th>
 --                 <th scope="col">Comfortable</th>
 --                 <th scope="col">Mithral</th>

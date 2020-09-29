@@ -3,6 +3,7 @@ module Calculates exposing
     , Character
     , EnchantedArmor(..)
     , Modifications
+    , flightBonus
     , flyingBeforeCheckPenalty
     , getCost
     , getEnhancement
@@ -10,6 +11,7 @@ module Calculates exposing
     , isComfortable
     , isMithral
     , setComfortable
+    , setMithral
     , totalArmor
     , totalCheckPenalty
     , totalMaxDex
@@ -104,6 +106,11 @@ setComfortable (EnchantedArmor a m) newComfortable =
     EnchantedArmor a { m | comfortable = newComfortable }
 
 
+setMithral : EnchantedArmor -> Bool -> EnchantedArmor
+setMithral (EnchantedArmor a m) newMithral =
+    EnchantedArmor a { m | mithral = newMithral }
+
+
 getEnhancement : EnchantedArmor -> Int
 getEnhancement (EnchantedArmor _ m) =
     m.enhancement
@@ -163,3 +170,8 @@ flyingBeforeCheckPenalty character =
                 0
     in
     character.dexMod + pointsFromClass + character.flyingRanks
+
+
+flightBonus : EnchantedArmor -> Character r -> Int
+flightBonus ea character =
+    totalCheckPenalty ea + flyingBeforeCheckPenalty character
