@@ -1,8 +1,8 @@
 module Example exposing (..)
 
-import Calculates exposing (Armor, Character, EnchantedArmor(..), Modifications, flyingBeforeCheckPenalty, sortArmor, totalArmor, totalMaxDex)
-import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer, bool, int, intRange, list, string)
+import Calculates exposing (Armor, EnchantedArmor(..), Modifications, flyingBeforeCheckPenalty, sortArmor, totalArmor, totalMaxDex)
+import Expect
+import Fuzz exposing (bool, int, intRange)
 import Main exposing (plusify)
 import Random exposing (maxInt)
 import Test exposing (..)
