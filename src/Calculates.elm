@@ -9,6 +9,7 @@ module Calculates exposing
     , getName
     , isComfortable
     , isMithral
+    , setComfortable
     , totalArmor
     , totalCheckPenalty
     , totalMaxDex
@@ -47,7 +48,25 @@ type alias Modifications =
 
 getCost : EnchantedArmor -> Int
 getCost (EnchantedArmor armor modification) =
-    armor.cost + (modification.enhancement * modification.enhancement * 1000)
+    let
+        comfortableCost =
+            if modification.comfortable then
+                5000
+
+            else
+                0
+
+        mithralCost =
+            if modification.mithral then
+                9000
+
+            else
+                0
+    in
+    armor.cost
+        + (modification.enhancement * modification.enhancement * 1000)
+        + comfortableCost
+        + mithralCost
 
 
 getName : EnchantedArmor -> String
@@ -78,6 +97,11 @@ isMithral (EnchantedArmor _ m) =
 isComfortable : EnchantedArmor -> Bool
 isComfortable (EnchantedArmor _ m) =
     m.comfortable
+
+
+setComfortable : EnchantedArmor -> Bool -> EnchantedArmor
+setComfortable (EnchantedArmor a m) newComfortable =
+    EnchantedArmor a { m | comfortable = newComfortable }
 
 
 getEnhancement : EnchantedArmor -> Int

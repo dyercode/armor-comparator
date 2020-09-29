@@ -13,6 +13,7 @@ import Calculates
         , getName
         , isComfortable
         , isMithral
+        , setComfortable
         , totalArmor
         , totalCheckPenalty
         )
@@ -59,6 +60,8 @@ type Msg
     | AddArmor
     | NewUuid
     | ChangeEnhancement String String
+    | ChangeComfortable String Bool
+    | Remove String
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -134,6 +137,22 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        ChangeComfortable armorId newValue ->
+            ( { model
+                | enchantedArmors =
+                    List.map
+                        (\( ea, id ) ->
+                            if id == armorId then
+                                ( setComfortable ea newValue, id )
+
+                            else
+                                ( ea, id )
+                        )
+                        model.enchantedArmors
+              }
+            , Cmd.none
+            )
+
         NewUuid ->
             let
                 ( newUuid, newSeed ) =
@@ -144,6 +163,11 @@ update msg model =
                 | currentUuid = Just newUuid
                 , currentSeed = newSeed
               }
+            , Cmd.none
+            )
+
+        Remove armorId ->
+            ( { model | enchantedArmors = List.filter (\( _, id ) -> id /= armorId) model.enchantedArmors }
             , Cmd.none
             )
 
@@ -290,7 +314,7 @@ armorList character armors =
 
 
 armorEntry : Character r -> ( EnchantedArmor, String ) -> Html Msg
-armorEntry character ( enchantedArmor, id ) =
+armorEntry character ( enchantedArmor, armorId ) =
     tr []
         [ td [] [ text <| getName enchantedArmor ]
         , td [] [ text <| plusify <| totalArmor enchantedArmor character ]
@@ -299,7 +323,7 @@ armorEntry character ( enchantedArmor, id ) =
         , td [] [ text "flightBonus" ]
         , td []
             [ select
-                [ onInput (ChangeEnhancement id) ]
+                [ onInput (ChangeEnhancement armorId) ]
                 (List.map
                     (\index ->
                         Html.option
@@ -312,9 +336,22 @@ armorEntry character ( enchantedArmor, id ) =
                     (List.range 0 5)
                 )
             ]
-        , td [] [ input [ type_ "checkbox", checked <| isComfortable enchantedArmor ] [] ]
+        , td []
+            [ input
+                [ type_ "checkbox"
+                , checked <| isComfortable enchantedArmor
+                , onCheck (ChangeComfortable armorId)
+                ]
+                []
+            ]
         , td [] [ input [ type_ "checkbox", checked <| isMithral enchantedArmor ] [] ]
-        , td [] [ text <| "remove button for " ++ id ]
+        , td []
+            [ button
+                [ id ("remove-" ++ armorId)
+                , onClick (Remove armorId)
+                ]
+                [ text "remove" ]
+            ]
         ]
 
 
@@ -337,10 +374,8 @@ plusify i =
 --                 <th scope="col">Armor Check Penalty</th>
 --                 <th scope="col">Cost</th>
 --                 <th scope="col">Fly Skill Bonus</th>
---                 <th scope="col">Enchantment Level</th>
 --                 <th scope="col">Comfortable</th>
 --                 <th scope="col">Mithral</th>
---                 <th scope="col" />
 --             </tr>
 --         </thead>
 --         <tbody data-bind="foreach: autoSort() ? sortedArmors() : comparedArmors">
@@ -350,13 +385,8 @@ plusify i =
 --                 <td data-bind="text: totalCheckPenalty()"></td>
 --                 <td><span data-bind="text: totalCost($parent.enhancements)"></span>gp</td>
 --                 <td data-bind="text: $parent.flightBonus($data, $parent.character())"></td>
---                 <td><select data-bind="value: selectedEnhancement,
--- 										 options: $parent.enhancements,
--- 										 optionsText: function(armor) {return '+' + armor.bonus},
--- 								 optionsValue: 'bonus'"></select></td>
 --                 <td><input type="checkbox" data-bind="checked: comfortable" /></td>
 --                 <td><input type="checkbox" data-bind="checked: mithral" /></td>
---                 <td><button data-bind="click: $parent.remove">Remove</button></td>
 --             </tr>
 --         </tbody>
 --     </table>
