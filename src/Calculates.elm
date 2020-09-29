@@ -184,12 +184,12 @@ flightBonus ea character =
     totalCheckPenalty ea + flyingBeforeCheckPenalty character
 
 
-sortArmor : List ( EnchantedArmor, String ) -> Character r -> List ( EnchantedArmor, String )
+sortArmor : List ( EnchantedArmor, a ) -> Character r -> List ( EnchantedArmor, a )
 sortArmor eas ch =
     List.sortWith (armorComparison ch) eas
 
 
-armorComparison : Character r -> ( EnchantedArmor, String ) -> ( EnchantedArmor, String ) -> Order
+armorComparison : Character r -> ( EnchantedArmor, a ) -> ( EnchantedArmor, a ) -> Order
 armorComparison c a b =
     let
         aae =
