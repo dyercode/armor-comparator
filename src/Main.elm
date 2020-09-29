@@ -15,6 +15,7 @@ import Calculates
         , isComfortable
         , isMithral
         , setComfortable
+        , setEnhancement
         , setMithral
         , totalArmor
         , totalCheckPenalty
@@ -121,18 +122,11 @@ update msg model =
                     String.toInt newValue
             in
             case ( id, parsedEnhancement ) of
-                ( uuid, Just newEnhancement ) ->
+                ( _, Just newEnhancement ) ->
                     ( { model
                         | enchantedArmors =
-                            List.map
-                                (\( EnchantedArmor armor mod, i ) ->
-                                    if i == uuid then
-                                        ( EnchantedArmor armor { mod | enhancement = newEnhancement }, i )
-
-                                    else
-                                        ( EnchantedArmor armor mod, i )
-                                )
-                                model.enchantedArmors
+                            model.enchantedArmors
+                                |> updateById id (setEnhancement newEnhancement)
                       }
                     , Cmd.none
                     )
@@ -143,15 +137,8 @@ update msg model =
         ChangeComfortable armorId newValue ->
             ( { model
                 | enchantedArmors =
-                    List.map
-                        (\( ea, id ) ->
-                            if id == armorId then
-                                ( setComfortable ea newValue, id )
-
-                            else
-                                ( ea, id )
-                        )
-                        model.enchantedArmors
+                    model.enchantedArmors
+                        |> updateById armorId (setComfortable newValue)
               }
             , Cmd.none
             )
@@ -159,15 +146,8 @@ update msg model =
         ChangeMithral armorId newValue ->
             ( { model
                 | enchantedArmors =
-                    List.map
-                        (\( ea, id ) ->
-                            if id == armorId then
-                                ( setMithral ea newValue, id )
-
-                            else
-                                ( ea, id )
-                        )
-                        model.enchantedArmors
+                    model.enchantedArmors
+                        |> updateById armorId (setMithral newValue)
               }
             , Cmd.none
             )
@@ -187,6 +167,23 @@ update msg model =
         Remove armorId ->
             ( { model | enchantedArmors = List.filter (\( _, id ) -> id /= armorId) model.enchantedArmors }
             , Cmd.none
+            )
+
+
+updateById : String -> (EnchantedArmor -> EnchantedArmor) -> List ( EnchantedArmor, String ) -> List ( EnchantedArmor, String )
+updateById id f list =
+    list
+        |> List.map
+            (\( ea, itemId ) ->
+                let
+                    newEa =
+                        if id == itemId then
+                            f ea
+
+                        else
+                            ea
+                in
+                ( newEa, itemId )
             )
 
 

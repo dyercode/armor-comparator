@@ -11,6 +11,7 @@ module Calculates exposing
     , isComfortable
     , isMithral
     , setComfortable
+    , setEnhancement
     , setMithral
     , totalArmor
     , totalCheckPenalty
@@ -101,14 +102,19 @@ isComfortable (EnchantedArmor _ m) =
     m.comfortable
 
 
-setComfortable : EnchantedArmor -> Bool -> EnchantedArmor
-setComfortable (EnchantedArmor a m) newComfortable =
+setComfortable : Bool -> EnchantedArmor -> EnchantedArmor
+setComfortable newComfortable (EnchantedArmor a m) =
     EnchantedArmor a { m | comfortable = newComfortable }
 
 
-setMithral : EnchantedArmor -> Bool -> EnchantedArmor
-setMithral (EnchantedArmor a m) newMithral =
+setMithral : Bool -> EnchantedArmor -> EnchantedArmor
+setMithral newMithral (EnchantedArmor a m) =
     EnchantedArmor a { m | mithral = newMithral }
+
+
+setEnhancement : Int -> EnchantedArmor -> EnchantedArmor
+setEnhancement newEnhancement (EnchantedArmor a m) =
+    EnchantedArmor a { m | enhancement = newEnhancement }
 
 
 getEnhancement : EnchantedArmor -> Int
