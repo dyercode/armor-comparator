@@ -190,22 +190,16 @@ sortArmor eas ch =
 
 
 armorComparison : Character r -> ( EnchantedArmor, a ) -> ( EnchantedArmor, a ) -> Order
-armorComparison c a b =
+armorComparison c ( a, _ ) ( b, _ ) =
     let
-        aae =
-            Tuple.first a
-
-        bae =
-            Tuple.first b
-
         armpare =
-            descend <| compare (totalArmor aae c) (totalArmor bae c)
+            descend <| compare (totalArmor a c) (totalArmor b c)
 
         checkpare =
-            descend <| compare (totalCheckPenalty aae) (totalCheckPenalty bae)
+            descend <| compare (totalCheckPenalty a) (totalCheckPenalty b)
 
         costpare =
-            compare (getCost aae) (getCost bae)
+            compare (getCost a) (getCost b)
     in
     armpare |> tyvm checkpare |> tyvm costpare
 
