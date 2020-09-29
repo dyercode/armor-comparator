@@ -130,16 +130,16 @@ sortSuite =
         [ test "highest armor first" <|
             \() ->
                 character
-                    |> sortArmor [ EnchantedArmor someArmor mod, EnchantedArmor { someArmor | armor = 1 } mod ]
-                    |> Expect.equalLists [ EnchantedArmor { someArmor | armor = 1 } mod, EnchantedArmor someArmor mod ]
+                    |> sortArmor [ ( EnchantedArmor someArmor mod, "1" ), ( EnchantedArmor { someArmor | armor = 1 } mod, "2" ) ]
+                    |> Expect.equalLists [ ( EnchantedArmor { someArmor | armor = 1 } mod, "2" ), ( EnchantedArmor someArmor mod, "1" ) ]
         , test "then lower check penalty" <|
             \() ->
                 character
-                    |> sortArmor [ EnchantedArmor { someArmor | checkPenalty = -1 } mod, EnchantedArmor someArmor mod ]
-                    |> Expect.equalLists [ EnchantedArmor someArmor mod, EnchantedArmor { someArmor | checkPenalty = -1 } mod ]
+                    |> sortArmor [ ( EnchantedArmor { someArmor | checkPenalty = -1 } mod, "1" ), ( EnchantedArmor someArmor mod, "2" ) ]
+                    |> Expect.equalLists [ ( EnchantedArmor someArmor mod, "2" ), ( EnchantedArmor { someArmor | checkPenalty = -1 } mod, "1" ) ]
         , test "then lower cost" <|
             \() ->
                 character
-                    |> sortArmor [ EnchantedArmor { someArmor | cost = 1 } mod, EnchantedArmor someArmor mod ]
-                    |> Expect.equalLists [ EnchantedArmor someArmor mod, EnchantedArmor { someArmor | cost = 1 } mod ]
+                    |> sortArmor [ ( EnchantedArmor { someArmor | cost = 1 } mod, "1" ), ( EnchantedArmor someArmor mod, "2" ) ]
+                    |> Expect.equalLists [ ( EnchantedArmor someArmor mod, "2" ), ( EnchantedArmor { someArmor | cost = 1 } mod, "1" ) ]
         ]

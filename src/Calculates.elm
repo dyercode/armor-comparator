@@ -184,31 +184,34 @@ flightBonus ea character =
     totalCheckPenalty ea + flyingBeforeCheckPenalty character
 
 
-sortArmor : List EnchantedArmor -> Character r -> List EnchantedArmor
+sortArmor : List ( EnchantedArmor, String ) -> Character r -> List ( EnchantedArmor, String )
 sortArmor eas ch =
     List.sortWith (armorComparison ch) eas
 
 
-armorComparison : Character r -> EnchantedArmor -> EnchantedArmor -> Order
+armorComparison : Character r -> ( EnchantedArmor, String ) -> ( EnchantedArmor, String ) -> Order
 armorComparison c a b =
     let
+        aae =
+            Tuple.first a
+
+        bae =
+            Tuple.first b
+
         armpare =
-            descend <| compare (totalArmor a c) (totalArmor b c)
+            descend <| compare (totalArmor aae c) (totalArmor bae c)
 
         checkpare =
-            descend <| compare (totalCheckPenalty a) (totalCheckPenalty b)
+            descend <| compare (totalCheckPenalty aae) (totalCheckPenalty bae)
 
         costpare =
-            compare (getCost a) (getCost b)
+            compare (getCost aae) (getCost bae)
     in
     armpare |> tyvm checkpare |> tyvm costpare
 
 
-
---|> tyvm costpare
-
-
-{-| elvis operator
+{-| elvis operator - I don't have a good name for this.
+| | if it's equal use the next sorter down the line
 -}
 tyvm : Order -> Order -> Order
 tyvm b a =

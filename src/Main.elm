@@ -17,6 +17,7 @@ import Calculates
         , setComfortable
         , setEnhancement
         , setMithral
+        , sortArmor
         , totalArmor
         , totalCheckPenalty
         )
@@ -265,7 +266,13 @@ armorSection model =
         [ h2 []
             [ text "Armor Comparison" ]
         , armorAdder model
-        , armorList model model.enchantedArmors
+        , armorList model
+            (if model.autoSort then
+                sortArmor model.enchantedArmors model
+
+             else
+                model.enchantedArmors
+            )
         ]
 
 
