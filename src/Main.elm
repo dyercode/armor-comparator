@@ -63,6 +63,7 @@ type Msg
     | ArmorSelected String
     | AddArmor
     | NewUuid
+    | ChangeSort Bool
     | ChangeEnhancement String String
     | ChangeComfortable String Bool
     | ChangeMithral String Bool
@@ -116,6 +117,9 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
+
+        ChangeSort newBool ->
+            ( { model | autoSort = newBool }, Cmd.none )
 
         ChangeEnhancement id newValue ->
             let
@@ -309,7 +313,13 @@ armorAdder model =
                 [ text "Add" ]
             , li []
                 [ label [ for "auto-sort" ] [ text "Auto-sort" ]
-                , input [ type_ "checkbox", id "auto-sort", checked model.autoSort ] []
+                , input
+                    [ type_ "checkbox"
+                    , id "auto-sort"
+                    , checked model.autoSort
+                    , onCheck ChangeSort
+                    ]
+                    []
                 ]
             ]
         ]
