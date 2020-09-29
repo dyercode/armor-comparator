@@ -13,6 +13,7 @@ module Calculates exposing
     , setComfortable
     , setEnhancement
     , setMithral
+    , sortArmor
     , totalArmor
     , totalCheckPenalty
     , totalMaxDex
@@ -181,3 +182,51 @@ flyingBeforeCheckPenalty character =
 flightBonus : EnchantedArmor -> Character r -> Int
 flightBonus ea character =
     totalCheckPenalty ea + flyingBeforeCheckPenalty character
+
+
+sortArmor : List EnchantedArmor -> Character r -> List EnchantedArmor
+sortArmor eas ch =
+    List.sortWith (armorComparison ch) eas
+
+
+armorComparison : Character r -> EnchantedArmor -> EnchantedArmor -> Order
+armorComparison c a b =
+    let
+        armpare =
+            descend <| compare (totalArmor a c) (totalArmor b c)
+
+        checkpare =
+            descend <| compare (totalCheckPenalty a) (totalCheckPenalty b)
+
+        costpare =
+            compare (getCost a) (getCost b)
+    in
+    armpare |> tyvm checkpare |> tyvm costpare
+
+
+
+--|> tyvm costpare
+
+
+{-| elvis operator
+-}
+tyvm : Order -> Order -> Order
+tyvm b a =
+    if a == EQ then
+        b
+
+    else
+        a
+
+
+descend : Order -> Order
+descend a =
+    case a of
+        LT ->
+            GT
+
+        EQ ->
+            EQ
+
+        GT ->
+            LT

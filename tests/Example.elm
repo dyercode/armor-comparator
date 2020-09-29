@@ -1,6 +1,6 @@
 module Example exposing (..)
 
-import Calculates exposing (Armor, Character, EnchantedArmor(..), Modifications, flyingBeforeCheckPenalty, totalArmor, totalMaxDex)
+import Calculates exposing (Armor, Character, EnchantedArmor(..), Modifications, flyingBeforeCheckPenalty, sortArmor, totalArmor, totalMaxDex)
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, bool, int, intRange, list, string)
 import Main exposing (plusify)
@@ -99,4 +99,47 @@ taSuite =
                 totalArmor (EnchantedArmor someArmor { mod | enhancement = 1 }) { character | dexMod = 1 }
                     |> Expect.equal 11
         , todo "dexMod is capped by maxdex"
+        ]
+
+
+sortSuite =
+    let
+        character =
+            { dexMod = 0
+            , flyingClassSkill = False
+            , flyingRanks = 0
+            }
+
+        someArmor : Armor
+        someArmor =
+            { name = "bare"
+            , armor = 0
+            , maxDex = 0
+            , checkPenalty = 0
+            , cost = 0
+            }
+
+        mod : Modifications
+        mod =
+            { enhancement = 0
+            , mithral = False
+            , comfortable = False
+            }
+    in
+    describe "should sort right"
+        [ test "highest armor first" <|
+            \() ->
+                character
+                    |> sortArmor [ EnchantedArmor someArmor mod, EnchantedArmor { someArmor | armor = 1 } mod ]
+                    |> Expect.equalLists [ EnchantedArmor { someArmor | armor = 1 } mod, EnchantedArmor someArmor mod ]
+        , test "then lower check penalty" <|
+            \() ->
+                character
+                    |> sortArmor [ EnchantedArmor { someArmor | checkPenalty = -1 } mod, EnchantedArmor someArmor mod ]
+                    |> Expect.equalLists [ EnchantedArmor someArmor mod, EnchantedArmor { someArmor | checkPenalty = -1 } mod ]
+        , test "then lower cost" <|
+            \() ->
+                character
+                    |> sortArmor [ EnchantedArmor { someArmor | cost = 1 } mod, EnchantedArmor someArmor mod ]
+                    |> Expect.equalLists [ EnchantedArmor someArmor mod, EnchantedArmor { someArmor | cost = 1 } mod ]
         ]
