@@ -1,4 +1,4 @@
-import { Elm } from '../../main'
+import { Elm } from '../Main.elm'
 
 const crypto = window.crypto || window.msCrypto;
 
