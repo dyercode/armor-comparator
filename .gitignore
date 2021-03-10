@@ -16,3 +16,4 @@ elm-stuff
 output
 *.log
 main.js
+.merlin
