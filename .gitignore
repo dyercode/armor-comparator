@@ -17,3 +17,4 @@ output
 *.log
 main.js
 .merlin
+.parcel-cache
