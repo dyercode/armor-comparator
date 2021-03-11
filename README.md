@@ -1,4 +1,4 @@
-[![Node.js CI](https://github.com/dyercode/armor-comparator/actions/workflows/test.yml/badge.svg)](https://github.com/dyercode/armor-comparator/actions/workflows/test.yml)
+[![Node.js CI](https://github.com/dyercode/armor-comparator/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/dyercode/armor-comparator/actions/workflows/test.yml)
 
 to run
 `yarn dev` to run parcel watcher
