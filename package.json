@@ -5,15 +5,14 @@
   "private": true,
   "author": "Jon Dyer",
   "devDependencies": {
-    "@parcel/transformer-elm": "^2.0.0-nightly.2244",
-    "@parcel/transformer-typescript-tsc": "^2.0.0-nightly.636",
+    "@parcel/transformer-elm": "^2.0.0-nightly.2310",
     "elm": "^0.19.1-5",
     "elm-analyse": "^0.16.5",
     "elm-format": "^0.8.5",
     "elm-hot": "^1.1.6",
-    "elm-test": "^0.19.1-revision6",
-    "node-elm-compiler": "^5.0.5",
-    "parcel": "^2.0.0-nightly.634"
+    "elm-test": "^0.19.1-revision7",
+    "node-elm-compiler": "^5.0.6",
+    "parcel": "^2.0.0-nightly.686"
   },
   "scripts": {
     "dev": "parcel src/index.html",
