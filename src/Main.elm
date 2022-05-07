@@ -20,9 +20,10 @@ import Calculates
         , sortArmor
         , totalArmor
         , totalCheckPenalty
+        , updateEnhancement
         )
-import Html exposing (Html, button, div, h2, input, label, li, section, select, table, tbody, td, text, th, thead, tr, ul)
-import Html.Attributes exposing (checked, for, id, name, scope, type_, value)
+import Html exposing (Html, button, div, h2, input, label, li, section, select, span, table, tbody, td, text, th, thead, tr, ul)
+import Html.Attributes exposing (checked, for, id, name, scope, style, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
 import List exposing (map)
 import Prng.Uuid as Uuid
@@ -64,10 +65,11 @@ type Msg
     | AddArmor
     | NewUuid
     | ChangeSort Bool
-    | ChangeEnhancement String String
     | ChangeComfortable String Bool
     | ChangeMithral String Bool
     | Remove String
+    | IncrementEnhancement String
+    | DecrementEnhancement String
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -115,23 +117,11 @@ update msg model =
         ChangeSort newBool ->
             ( { model | autoSort = newBool }, Cmd.none )
 
-        ChangeEnhancement id newValue ->
-            let
-                parsedEnhancement =
-                    String.toInt newValue
-            in
-            case ( id, parsedEnhancement ) of
-                ( _, Just newEnhancement ) ->
-                    ( { model
-                        | enchantedArmors =
-                            model.enchantedArmors
-                                |> updateById id (setEnhancement newEnhancement)
-                      }
-                    , Cmd.none
-                    )
+        IncrementEnhancement id ->
+            ( { model | enchantedArmors = model.enchantedArmors |> updateById id (updateEnhancement ((+) 1)) }, Cmd.none )
 
-                _ ->
-                    ( model, Cmd.none )
+        DecrementEnhancement id ->
+            ( { model | enchantedArmors = model.enchantedArmors |> updateById id (updateEnhancement ((+) -1)) }, Cmd.none )
 
         ChangeComfortable armorId newValue ->
             ( { model
@@ -341,19 +331,32 @@ armorList character armors =
 
 enchantmentSelect : EnchantedArmor -> String -> Html Msg
 enchantmentSelect enchantedArmor armorId =
-    select
-        [ onInput (ChangeEnhancement armorId) ]
-        (List.map
-            (\index ->
-                Html.option
-                    [ value (String.fromInt index)
-                    , Html.Attributes.selected
-                        (getEnhancement enchantedArmor == index)
-                    ]
-                    [ text ("+" ++ String.fromInt index) ]
-            )
-            (List.range 0 5)
+    let
+        enh =
+            getEnhancement enchantedArmor
+
+        dectainer ih =
+            if enh > 0 then
+                ih
+
+            else
+                text ""
+
+        inctainer ih =
+            if enh < 5 then
+                ih
+
+            else
+                text ""
+    in
+    div [] [div [ style "display" "flex" ]
+        (List.map (\e -> div [ style "flex" "1" ] [ e ])
+            [ dectainer <| button [ onClick <| DecrementEnhancement armorId ] [ text "-" ]
+            , span [ ] [ text <| plusify (getEnhancement enchantedArmor) ]
+            , inctainer <| button [ onClick <| IncrementEnhancement armorId ] [ text "+" ]
+            ]
         )
+        ]
 
 
 armorEntry : Character r -> ( EnchantedArmor, String ) -> Html Msg

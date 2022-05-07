@@ -12,6 +12,7 @@ module Calculates exposing
     , isMithral
     , setComfortable
     , setEnhancement
+    , updateEnhancement
     , setMithral
     , sortArmor
     , totalArmor
@@ -116,6 +117,11 @@ setMithral newMithral (EnchantedArmor a m) =
 setEnhancement : Int -> EnchantedArmor -> EnchantedArmor
 setEnhancement newEnhancement (EnchantedArmor a m) =
     EnchantedArmor a { m | enhancement = newEnhancement }
+
+
+updateEnhancement : (Int -> Int) -> EnchantedArmor -> EnchantedArmor
+updateEnhancement f (EnchantedArmor a m) =
+    EnchantedArmor a { m | enhancement = f m.enhancement }
 
 
 getEnhancement : EnchantedArmor -> Int
