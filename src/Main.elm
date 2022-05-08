@@ -15,7 +15,6 @@ import Calculates
         , isComfortable
         , isMithral
         , setComfortable
-        , setEnhancement
         , setMithral
         , sortArmor
         , totalArmor
@@ -349,13 +348,14 @@ enchantmentSelect enchantedArmor armorId =
             else
                 text ""
     in
-    div [] [div [ style "display" "flex" ]
-        (List.map (\e -> div [ style "flex" "1" ] [ e ])
-            [ dectainer <| button [ onClick <| DecrementEnhancement armorId ] [ text "-" ]
-            , span [ ] [ text <| plusify (getEnhancement enchantedArmor) ]
-            , inctainer <| button [ onClick <| IncrementEnhancement armorId ] [ text "+" ]
-            ]
-        )
+    div []
+        [ div [ style "display" "flex" ]
+            (List.map (\e -> div [ style "flex" "1" ] [ e ])
+                [ dectainer <| button [ onClick <| DecrementEnhancement armorId ] [ text "-" ]
+                , span [] [ text <| plusify (getEnhancement enchantedArmor) ]
+                , inctainer <| button [ onClick <| IncrementEnhancement armorId ] [ text "+" ]
+                ]
+            )
         ]
 
 
