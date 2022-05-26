@@ -3,20 +3,71 @@ module Example exposing (..)
 import Calculates exposing (Armor, EnchantedArmor(..), Modifications, flyingBeforeCheckPenalty, sortArmor, totalArmor, totalMaxDex)
 import Expect
 import Fuzz exposing (bool, int, intRange)
-import Main exposing (plusify)
+import Main exposing (formatPrice, plusify)
 import Random exposing (maxInt)
 import Test exposing (..)
 
 
-plusSuite =
-    describe "plussify"
-        [ test "Prepends the plus sign to a number" <|
-            \() -> plusify 1 |> Expect.equal "+1"
-        , test "Except when the number is negative" <|
-            \() -> plusify -1 |> Expect.equal "-1"
+par : (a -> b) -> (a -> c) -> (b -> c -> d) -> a -> d
+par f g h a =
+    h (f a) (g a)
+
+
+equalResults : (a -> b) -> (a -> b) -> a -> Expect.Expectation
+equalResults a b =
+    par a b Expect.equal
+
+
+formatSuite : Test
+formatSuite =
+    describe "formatting"
+        [ describe "plusify"
+            [ test "Prepends the plus sign to a number" <|
+                \() -> plusify 1 |> Expect.equal "+1"
+            , test "Except when the number is negative" <|
+                \() -> plusify -1 |> Expect.equal "-1"
+            , test "But even if it's zero" <|
+                \() -> plusify 0 |> Expect.equal "+0"
+            ]
+        , describe "cost separators"
+            [ fuzz (intRange 0 maxInt) "long prices have commas separated for readability" <|
+                \unformatted ->
+                    let
+                        commaPos =
+                            String.reverse >> String.indexes ","
+
+                        commaCount =
+                            commaPos >> List.length
+
+                        expectedCommaCount =
+                            String.fromInt
+                                >> String.length
+                                >> (\n -> (n - 1) // 3)
+                    in
+                    unformatted
+                        |> Expect.all
+                            [ equalResults (formatPrice >> commaCount) expectedCommaCount
+                            , \uf ->
+                                let
+                                    subject =
+                                        formatPrice uf |> commaPos
+                                in
+                                List.all
+                                    (\n -> modBy 4 (n + 1) == 0)
+                                    subject
+                                    |> Expect.true
+                                        ("commas incorrect (string: '"
+                                            ++ formatPrice uf
+                                            ++ "', positions: "
+                                            ++ Debug.toString subject
+                                            ++ "])"
+                                        )
+                            ]
+            ]
         ]
 
 
+tmdSuite : Test
 tmdSuite =
     let
         someArmor =
@@ -46,6 +97,7 @@ tmdSuite =
         ]
 
 
+fbcpSuite : Test
 fbcpSuite =
     let
         character =
@@ -70,6 +122,7 @@ fbcpSuite =
         ]
 
 
+taSuite : Test
 taSuite =
     let
         character =
@@ -106,6 +159,7 @@ taSuite =
         ]
 
 
+sortSuite : Test
 sortSuite =
     let
         character =

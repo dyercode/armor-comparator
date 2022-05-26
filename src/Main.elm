@@ -1,4 +1,4 @@
-module Main exposing (main, plusify)
+module Main exposing (formatPrice, main, plusify)
 
 import Browser
 import Calculates
@@ -21,6 +21,8 @@ import Calculates
         , totalCheckPenalty
         , updateEnhancement
         )
+import FormatNumber exposing (format)
+import FormatNumber.Locales exposing (Decimals(..), usLocale)
 import Html exposing (Html, button, div, h2, input, label, li, section, select, span, table, tbody, td, text, th, thead, tr, ul)
 import Html.Attributes exposing (checked, for, id, name, scope, style, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
@@ -365,7 +367,7 @@ armorEntry character ( enchantedArmor, armorId ) =
         [ td [] [ text <| getName enchantedArmor ]
         , td [] [ text <| plusify <| totalArmor enchantedArmor character ]
         , td [] [ text <| String.fromInt <| totalCheckPenalty enchantedArmor ]
-        , td [] [ text <| String.fromInt <| getCost enchantedArmor ]
+        , td [] [ text <| formatPrice <| getCost enchantedArmor ]
         , td [] [ text <| plusify <| flightBonus enchantedArmor character ]
         , td []
             [ enchantmentSelect enchantedArmor armorId ]
@@ -402,3 +404,8 @@ plusify i =
 
     else
         "+" ++ String.fromInt i
+
+
+formatPrice : Int -> String
+formatPrice i =
+    format { usLocale | decimals = Exact 0 } (toFloat i)
