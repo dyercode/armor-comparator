@@ -18,3 +18,4 @@ output
 main.js
 .merlin
 .parcel-cache
+.direnv

@@ -55,13 +55,8 @@ formatSuite =
                                 List.all
                                     (\n -> modBy 4 (n + 1) == 0)
                                     subject
-                                    |> Expect.true
-                                        ("commas incorrect (string: '"
-                                            ++ formatPrice uf
-                                            ++ "', positions: "
-                                            ++ Debug.toString subject
-                                            ++ "])"
-                                        )
+                                    |> Expect.equal
+                                        True
                             ]
             ]
         ]
