@@ -1,0 +1,3 @@
+commands:
+  build: yarn build
+  release: rm -rf dist && yarn build && ./build_container.sh

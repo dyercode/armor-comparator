@@ -12,7 +12,17 @@
       let pkgs = nixpkgs.legacyPackages.${system};
       in {
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [ dev.defaultPackage.${system} yarn ];
+          nativeBuildInputs = with pkgs; [
+            dev.defaultPackage.${system}
+            yarn
+            buildah
+            fish
+          ];
+
+          shellHook = ''
+            export RUNNER="podman"
+            export BUILDER="buildah"
+          '';
         };
       });
 }
