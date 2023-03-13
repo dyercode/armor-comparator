@@ -12,12 +12,12 @@ module Calculates exposing
     , isMithral
     , setComfortable
     , setEnhancement
-    , updateEnhancement
     , setMithral
     , sortArmor
     , totalArmor
     , totalCheckPenalty
     , totalMaxDex
+    , updateEnhancement
     )
 
 import List exposing (map)

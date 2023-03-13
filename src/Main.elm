@@ -1,4 +1,4 @@
-module Main exposing (formatPrice, main, plusify)
+module Main exposing (formatPrice, main, plusify, Model, Msg)
 
 import Browser
 import Calculates

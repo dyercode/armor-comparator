@@ -1,4 +1,4 @@
-module Example exposing (..)
+module Example exposing (fbcpSuite, formatSuite, sortSuite, taSuite, tmdSuite)
 
 import Calculates exposing (Armor, EnchantedArmor(..), Modifications, flyingBeforeCheckPenalty, sortArmor, totalArmor, totalMaxDex)
 import Expect
