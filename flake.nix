@@ -3,7 +3,7 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    dev.url = "github:dyercode/dev?rev=ffbbd50d25307bcbd3512996ba1a8db0e8b4d385";
+    dev.url = "github:dyercode/dev";
     container.url = "github:dyercode/cnt";
   };
 
@@ -12,13 +12,19 @@
       let pkgs = nixpkgs.legacyPackages.${system};
       in {
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [
-            dev.defaultPackage.${system}
-            container.defaultPackage.${system}
-            yarn
-            buildah
-            fish
-          ];
+          nativeBuildInputs = with pkgs;
+            [
+              dev.packages.${system}.default
+              container.defaultPackage.${system}
+              yarn
+              buildah
+              fish
+            ] ++ (with pkgs.elmPackages; [
+              elm-coverage
+              elm-format
+              elm-review
+              elm-json
+            ]);
 
           shellHook = ''
             export RUNNER="podman"

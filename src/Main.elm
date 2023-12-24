@@ -1,4 +1,4 @@
-module Main exposing (formatPrice, main, plusify, Model, Msg)
+module Main exposing (Model, Msg, formatPrice, main, plusify)
 
 import Browser
 import Calculates
@@ -97,6 +97,7 @@ update msg model =
 
         ArmorSelected name ->
             let
+                newArm : Maybe Armor
                 newArm =
                     List.filter (\a -> a.name == name) armory |> List.head
             in
@@ -106,6 +107,7 @@ update msg model =
             case ( model.selectedArmor, model.currentUuid ) of
                 ( Just arm, Just uuid ) ->
                     let
+                        newArmor : EnchantedArmor
                         newArmor =
                             EnchantedArmor arm defaultModifications
                     in
@@ -166,6 +168,7 @@ updateById id f list =
         |> List.map
             (\( ea, itemId ) ->
                 let
+                    newEa : EnchantedArmor
                     newEa =
                         if id == itemId then
                             f ea
@@ -333,9 +336,11 @@ armorList character armors =
 enchantmentSelect : EnchantedArmor -> String -> Html Msg
 enchantmentSelect enchantedArmor armorId =
     let
+        enh : Int
         enh =
             getEnhancement enchantedArmor
 
+        dectainer : Html msg -> Html msg
         dectainer ih =
             if enh > 0 then
                 ih
@@ -343,6 +348,7 @@ enchantmentSelect enchantedArmor armorId =
             else
                 text ""
 
+        inctainer : Html msg -> Html msg
         inctainer ih =
             if enh < 5 then
                 ih

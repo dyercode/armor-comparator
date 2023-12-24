@@ -20,8 +20,6 @@ module Calculates exposing
     , updateEnhancement
     )
 
-import List exposing (map)
-
 
 type EnchantedArmor
     = EnchantedArmor Armor Modifications
@@ -54,6 +52,7 @@ type alias Modifications =
 getCost : EnchantedArmor -> Int
 getCost (EnchantedArmor armor modification) =
     let
+        comfortableCost : number
         comfortableCost =
             if modification.comfortable then
                 5000
@@ -61,6 +60,7 @@ getCost (EnchantedArmor armor modification) =
             else
                 0
 
+        mithralCost : number
         mithralCost =
             if modification.mithral then
                 9000
@@ -132,6 +132,7 @@ getEnhancement (EnchantedArmor _ m) =
 totalMaxDex : EnchantedArmor -> Int
 totalMaxDex ea =
     let
+        mithralBonus : number
         mithralBonus =
             if isMithral ea then
                 2
@@ -142,19 +143,30 @@ totalMaxDex ea =
     getMaxDex ea + mithralBonus
 
 
+{-| Apply a single argument to each member of a list of functions.of
+
+    flap 1 [ (+) 1, (+) 2, (+) 3 ] == [ 2, 3, 4 ]
+
+-}
+flap : a -> List (a -> b) -> List b
+flap a fs =
+    fs |> List.map (\b -> b a)
+
+
 totalArmor : EnchantedArmor -> Character r -> Int
 totalArmor ea character =
     [ getArmor
     , min character.dexMod << totalMaxDex
     , getEnhancement
     ]
-        |> map ((|>) ea)
+        |> flap ea
         |> List.sum
 
 
 totalCheckPenalty : EnchantedArmor -> Int
 totalCheckPenalty ea =
     let
+        mithralModifier : number
         mithralModifier =
             if isMithral ea then
                 3
@@ -162,6 +174,7 @@ totalCheckPenalty ea =
             else
                 0
 
+        comfortableModifier : number
         comfortableModifier =
             if isComfortable ea then
                 1
@@ -175,6 +188,7 @@ totalCheckPenalty ea =
 flyingBeforeCheckPenalty : Character r -> Int
 flyingBeforeCheckPenalty character =
     let
+        pointsFromClass : number
         pointsFromClass =
             if character.flyingClassSkill && character.flyingRanks > 0 then
                 3
@@ -198,12 +212,15 @@ sortArmor eas ch =
 armorComparison : Character r -> ( EnchantedArmor, a ) -> ( EnchantedArmor, a ) -> Order
 armorComparison c ( a, _ ) ( b, _ ) =
     let
+        armpare : Order
         armpare =
             descend <| compare (totalArmor a c) (totalArmor b c)
 
+        checkpare : Order
         checkpare =
             descend <| compare (totalCheckPenalty a) (totalCheckPenalty b)
 
+        costpare : Order
         costpare =
             compare (getCost a) (getCost b)
     in

@@ -5,7 +5,7 @@ import Expect
 import Fuzz exposing (bool, int, intRange)
 import Main exposing (formatPrice, plusify)
 import Random exposing (maxInt)
-import Test exposing (..)
+import Test exposing (Test, describe, fuzz, fuzz2, test)
 
 
 par : (a -> b) -> (a -> c) -> (b -> c -> d) -> a -> d
@@ -33,12 +33,15 @@ formatSuite =
             [ fuzz (intRange 0 maxInt) "long prices have commas separated for readability" <|
                 \unformatted ->
                     let
+                        commaPos : String -> List Int
                         commaPos =
                             String.reverse >> String.indexes ","
 
+                        commaCount : String -> Int
                         commaCount =
                             commaPos >> List.length
 
+                        expectedCommaCount : Int -> Int
                         expectedCommaCount =
                             String.fromInt
                                 >> String.length
@@ -49,6 +52,7 @@ formatSuite =
                             [ equalResults (formatPrice >> commaCount) expectedCommaCount
                             , \uf ->
                                 let
+                                    subject : List Int
                                     subject =
                                         formatPrice uf |> commaPos
                                 in
@@ -65,6 +69,7 @@ formatSuite =
 tmdSuite : Test
 tmdSuite =
     let
+        someArmor : Armor
         someArmor =
             { name = "Full plate"
             , armor = 9
@@ -95,6 +100,7 @@ tmdSuite =
 fbcpSuite : Test
 fbcpSuite =
     let
+        character : { dexMod : number, flyingClassSkill : Bool, flyingRanks : number }
         character =
             { dexMod = 0
             , flyingClassSkill = False
@@ -120,6 +126,7 @@ fbcpSuite =
 taSuite : Test
 taSuite =
     let
+        character : { dexMod : number, flyingClassSkill : Bool, flyingRanks : number }
         character =
             { dexMod = 0
             , flyingClassSkill = False
@@ -157,6 +164,7 @@ taSuite =
 sortSuite : Test
 sortSuite =
     let
+        character : { dexMod : number, flyingClassSkill : Bool, flyingRanks : number }
         character =
             { dexMod = 0
             , flyingClassSkill = False

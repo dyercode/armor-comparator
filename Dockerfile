@@ -1,2 +1,2 @@
-FROM nginx:1.23-alpine
-COPY ../dist/ /usr/share/nginx/html/armor
+FROM nginx:1.25-alpine
+COPY dist/ /usr/share/nginx/html/armor

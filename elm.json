@@ -21,12 +21,12 @@
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
             "elm/virtual-dom": "1.0.3",
-            "myrho/elm-round": "1.0.4"
+            "myrho/elm-round": "1.0.5"
         }
     },
     "test-dependencies": {
         "direct": {
-            "elm-explorations/test": "2.0.1"
+            "elm-explorations/test": "2.1.2"
         },
         "indirect": {
             "elm/bytes": "1.0.8",
