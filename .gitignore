@@ -19,3 +19,4 @@ main.js
 .merlin
 .parcel-cache
 .direnv
+.yarn/install-state.gz

@@ -19,5 +19,5 @@
     "lint": "elm-review",
     "test": "elm-test"
   },
-  "dependencies": {}
+  "packageManager": "yarn@4.0.2"
 }
