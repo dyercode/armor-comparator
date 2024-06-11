@@ -2,35 +2,44 @@
   description = "Armor comparing app for some ancient rpg";
 
   inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
     dev.url = "github:dyercode/dev";
     container.url = "github:dyercode/cnt";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; 
   };
 
-  outputs = { self, nixpkgs, flake-utils, dev, container }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system};
-      in {
-        devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs;
-            [
-              dev.packages.${system}.default
-              container.defaultPackage.${system}
-              yarn
-              buildah
-              fish
-            ] ++ (with pkgs.elmPackages; [
-              elm-coverage
-              elm-format
-              elm-review
-              elm-json
-            ]);
+  outputs =
+    {
+      self,
+      nixpkgs,
+      dev,
+      container,
+    }:
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+    in
+    {
+      devShells.${system}.default = pkgs.mkShell {
+        nativeBuildInputs =
+          with pkgs;
+          [
+            dev.packages.${system}.default
+            container.packages.${system}.default
+            yarn-berry
+            buildah
+          ]
+          ++ (with pkgs.elmPackages; [
+            elm-coverage
+            elm-format
+            elm-review
+            elm-json
+          ]);
 
-          shellHook = ''
-            export RUNNER="podman"
-            export BUILDER="buildah"
-            export IMAGE="armor"
-          '';
-        };
-      });
+        shellHook = ''
+          export RUNNER="podman"
+          export BUILDER="buildah"
+          export IMAGE="armor"
+        '';
+      };
+    };
 }
