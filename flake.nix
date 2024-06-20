@@ -4,7 +4,7 @@
   inputs = {
     dev.url = "github:dyercode/dev";
     container.url = "github:dyercode/cnt";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; 
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
   outputs =
