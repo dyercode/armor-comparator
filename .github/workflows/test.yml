@@ -1,23 +1,15 @@
-name: Node.js CI
-
+name: CI
 on:
-  push:
   pull_request:
-
+  push:
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
+  test:
     strategy:
-      matrix:
-        node-version: [20.x]
-
+      fail-fast: false
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn install
-    - run: yarn test
+      - uses: cachix/install-nix-action@8887e596b4ee1134dae06b98d573bd674693f47c
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run checks
+        run: nix develop --command bash -c "dev check"
