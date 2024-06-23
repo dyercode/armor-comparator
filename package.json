@@ -4,16 +4,16 @@
   "version": "0.0.1",
   "private": true,
   "author": "Jon Dyer",
+  "type": "module",
   "devDependencies": {
-    "@parcel/transformer-elm": "^2.12.0",
     "elm": "^0.19.1-6",
     "elm-hot": "^1.1.6",
-    "node-elm-compiler": "^5.0.6",
-    "parcel": "^2.12.0"
+    "vite": "^5.3.1",
+    "vite-plugin-elm": "^3.0.1"
   },
   "scripts": {
-    "dev": "parcel src/index.html",
-    "build": "parcel build src/index.html --public-url .",
+    "dev": "vite --host --port 1234",
+    "build": "vite build",
     "build-elm": "elm make src/Main.elm --output=main.js --debug",
     "lint": "elm-review",
     "test": "elm-test"
