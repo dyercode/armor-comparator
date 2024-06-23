@@ -27,8 +27,11 @@
             container.packages.${system}.default
             yarn-berry
             buildah
+            git
           ]
           ++ (with pkgs.elmPackages; [
+            elm
+            elm-test
             elm-coverage
             elm-format
             elm-review
