@@ -13,7 +13,7 @@
   },
   "scripts": {
     "dev": "vite --host --port 1234",
-    "build": "vite build",
+    "build": "vite build --base armor",
     "build-elm": "elm make src/Main.elm --output=main.js --debug",
     "lint": "elm-review",
     "test": "elm-test"
