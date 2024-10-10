@@ -13,7 +13,6 @@ import Calculates
         , getEnhancement
         , getName
         , isComfortable
-        , isMithral
         , setComfortable
         , setMithral
         , sortArmor
@@ -27,6 +26,7 @@ import Html exposing (Html, button, div, h2, input, label, li, section, select, 
 import Html.Attributes exposing (checked, for, id, name, scope, style, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
 import List exposing (map)
+import Mithral
 import Prng.Uuid as Uuid
 import Random.Pcg.Extended exposing (Seed, initialSeed, step)
 import Update.Extra exposing (andThen)
@@ -67,7 +67,7 @@ type Msg
     | NewUuid
     | ChangeSort Bool
     | ChangeComfortable String Bool
-    | ChangeMithral String Bool
+    | ChangeMithral String Mithral.Mithral
     | Remove String
     | IncrementEnhancement String
     | DecrementEnhancement String
@@ -241,7 +241,7 @@ type alias Model =
 
 defaultModifications : Modifications
 defaultModifications =
-    { enhancement = 0, mithral = False, comfortable = False }
+    { enhancement = 0, mithral = Mithral.NonMithral, comfortable = False }
 
 
 armory : List Armor
@@ -388,8 +388,8 @@ armorEntry character ( enchantedArmor, armorId ) =
         , td []
             [ input
                 [ type_ "checkbox"
-                , checked <| isMithral enchantedArmor
-                , onCheck (ChangeMithral armorId)
+                , checked <| Mithral.Mithral == Calculates.mithral enchantedArmor
+                , onCheck (ChangeMithral armorId << Mithral.fromBool)
                 ]
                 []
             ]

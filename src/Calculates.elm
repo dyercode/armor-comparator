@@ -9,9 +9,8 @@ module Calculates exposing
     , getEnhancement
     , getName
     , isComfortable
-    , isMithral
+    , mithral
     , setComfortable
-    , setEnhancement
     , setMithral
     , sortArmor
     , totalArmor
@@ -19,6 +18,8 @@ module Calculates exposing
     , totalMaxDex
     , updateEnhancement
     )
+
+import Mithral exposing (Mithral(..))
 
 
 type EnchantedArmor
@@ -44,7 +45,7 @@ type alias Armor =
 
 type alias Modifications =
     { enhancement : Int
-    , mithral : Bool
+    , mithral : Mithral.Mithral
     , comfortable : Bool
     }
 
@@ -62,11 +63,12 @@ getCost (EnchantedArmor armor modification) =
 
         mithralCost : number
         mithralCost =
-            if modification.mithral then
-                9000
+            case modification.mithral of
+                Mithral.Mithral ->
+                    9000
 
-            else
-                0
+                Mithral.NonMithral ->
+                    0
     in
     armor.cost
         + (modification.enhancement * modification.enhancement * 1000)
@@ -94,9 +96,9 @@ getCheckPenalty (EnchantedArmor a _) =
     a.checkPenalty
 
 
-isMithral : EnchantedArmor -> Bool
-isMithral (EnchantedArmor _ m) =
-    m.mithral
+mithral : EnchantedArmor -> Mithral.Mithral
+mithral (EnchantedArmor _ ea) =
+    ea.mithral
 
 
 isComfortable : EnchantedArmor -> Bool
@@ -109,14 +111,9 @@ setComfortable newComfortable (EnchantedArmor a m) =
     EnchantedArmor a { m | comfortable = newComfortable }
 
 
-setMithral : Bool -> EnchantedArmor -> EnchantedArmor
+setMithral : Mithral.Mithral -> EnchantedArmor -> EnchantedArmor
 setMithral newMithral (EnchantedArmor a m) =
     EnchantedArmor a { m | mithral = newMithral }
-
-
-setEnhancement : Int -> EnchantedArmor -> EnchantedArmor
-setEnhancement newEnhancement (EnchantedArmor a m) =
-    EnchantedArmor a { m | enhancement = newEnhancement }
 
 
 updateEnhancement : (Int -> Int) -> EnchantedArmor -> EnchantedArmor
@@ -134,11 +131,12 @@ totalMaxDex ea =
     let
         mithralBonus : number
         mithralBonus =
-            if isMithral ea then
-                2
+            case mithral ea of
+                Mithral.Mithral ->
+                    2
 
-            else
-                0
+                Mithral.NonMithral ->
+                    0
     in
     getMaxDex ea + mithralBonus
 
@@ -168,11 +166,12 @@ totalCheckPenalty ea =
     let
         mithralModifier : number
         mithralModifier =
-            if isMithral ea then
-                3
+            case mithral ea of
+                Mithral ->
+                    3
 
-            else
-                0
+                NonMithral ->
+                    0
 
         comfortableModifier : number
         comfortableModifier =

@@ -4,6 +4,7 @@ import Calculates exposing (Armor, EnchantedArmor(..), Modifications, flyingBefo
 import Expect
 import Fuzz exposing (bool, int, intRange)
 import Main exposing (formatPrice, plusify)
+import Mithral exposing (Mithral(..))
 import Random exposing (maxInt)
 import Test exposing (Test, describe, fuzz, fuzz2, test)
 
@@ -81,7 +82,7 @@ tmdSuite =
         mod : Modifications
         mod =
             { enhancement = 0
-            , mithral = False
+            , mithral = NonMithral
             , comfortable = False
             }
     in
@@ -92,7 +93,7 @@ tmdSuite =
                     |> Expect.equal num
         , fuzz int "is inclreased by 2 for mithral" <|
             \num ->
-                totalMaxDex (EnchantedArmor { someArmor | maxDex = num } { mod | mithral = True })
+                totalMaxDex (EnchantedArmor { someArmor | maxDex = num } { mod | mithral = Mithral })
                     |> Expect.equal (num + 2)
         ]
 
@@ -145,7 +146,7 @@ taSuite =
         mod : Modifications
         mod =
             { enhancement = 0
-            , mithral = False
+            , mithral = NonMithral
             , comfortable = False
             }
     in
@@ -187,7 +188,7 @@ sortSuite =
         mod : Modifications
         mod =
             { enhancement = 0
-            , mithral = False
+            , mithral = NonMithral
             , comfortable = False
             }
     in
