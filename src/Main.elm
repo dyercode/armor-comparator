@@ -371,7 +371,7 @@ armorEntry : Character r -> ( EnchantedArmor, String ) -> Html Msg
 armorEntry character ( enchantedArmor, armorId ) =
     tr []
         [ td [] [ text <| getName enchantedArmor ]
-        , td [] [ text <| plusify <| totalArmor enchantedArmor character ]
+        , td [] [ text <| plusify <| totalArmor character enchantedArmor ]
         , td [] [ text <| String.fromInt <| totalCheckPenalty enchantedArmor ]
         , td [] [ text <| formatPrice <| getCost enchantedArmor ]
         , td [] [ text <| plusify <| flightBonus enchantedArmor character ]

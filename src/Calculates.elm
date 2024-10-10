@@ -153,8 +153,8 @@ flap a fs =
     fs |> List.map (\b -> b a)
 
 
-totalArmor : EnchantedArmor -> Character r -> Int
-totalArmor ea character =
+totalArmor : Character r -> EnchantedArmor -> Int
+totalArmor character ea =
     [ getArmor
     , min character.dexMod << totalMaxDex
     , getEnhancement
@@ -214,7 +214,12 @@ armorComparison c ( a, _ ) ( b, _ ) =
     let
         armpare : Order
         armpare =
-            descend <| compare (totalArmor a c) (totalArmor b c)
+            let
+                totalCharacterArmor : EnchantedArmor -> Int
+                totalCharacterArmor =
+                    totalArmor c
+            in
+            descend <| compare (totalCharacterArmor a) (totalCharacterArmor b)
 
         checkpare : Order
         checkpare =

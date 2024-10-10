@@ -152,11 +152,15 @@ taSuite =
     describe "totalArmor"
         [ test "sum of armor and dex and enhancementbonus" <|
             \() ->
-                totalArmor (EnchantedArmor someArmor { mod | enhancement = 1 }) { character | dexMod = 1 }
+                totalArmor
+                    { character | dexMod = 1 }
+                    (EnchantedArmor someArmor { mod | enhancement = 1 })
                     |> Expect.equal 11
         , fuzz2 int (intRange 0 maxInt) "dexMod is capped by maxdex" <|
             \dexMod maxDex ->
-                totalArmor (EnchantedArmor { someArmor | maxDex = maxDex, armor = 0 } mod) { character | dexMod = dexMod + maxDex }
+                totalArmor
+                    { character | dexMod = dexMod + maxDex }
+                    (EnchantedArmor { someArmor | maxDex = maxDex, armor = 0 } mod)
                     |> Expect.atMost maxDex
         ]
 
