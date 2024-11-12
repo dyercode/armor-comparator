@@ -27,3 +27,4 @@ main.js
 !.yarn/sdks
 !.yarn/versions
 
+.coverage
