@@ -32,7 +32,7 @@
           ++ (with pkgs.elmPackages; [
             elm
             elm-test
-            elm-coverage
+            # elm-coverage # dead and removed from nix :/
             elm-format
             elm-review
             elm-json
