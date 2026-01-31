@@ -7,6 +7,8 @@ jobs:
     strategy:
       fail-fast: false
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: cachix/install-nix-action@8887e596b4ee1134dae06b98d573bd674693f47c
       - name: Checkout
