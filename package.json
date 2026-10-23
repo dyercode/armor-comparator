@@ -6,7 +6,7 @@
   "author": "Jon Dyer",
   "type": "module",
   "devDependencies": {
-    "elm": "^0.19.3-0",
+    "elm": "^0.19.2-0",
     "elm-hot": "^1.1.6",
     "vite": "^8.3.5",
     "vite-plugin-elm": "^3.0.1"
