@@ -10,9 +10,9 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: cachix/install-nix-action@8887e596b4ee1134dae06b98d573bd674693f47c
+      - uses: cachix/install-nix-action@v31
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Run checks
         run: nix develop --command bash -c "dev check"
       # - name: Run coverage
