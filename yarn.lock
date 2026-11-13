@@ -200,7 +200,7 @@ __metadata:
     elm: "npm:^0.19.2-0"
     elm-hot: "npm:^1.1.6"
     vite: "npm:^8.3.5"
-    vite-plugin-elm: "npm:^3.0.1"
+    vite-plugin-elm: "npm:^3.1.0"
   languageName: unknown
   linkType: soft
 
@@ -908,9 +908,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-elm@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "vite-plugin-elm@npm:3.0.1"
+"vite-plugin-elm@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "vite-plugin-elm@npm:3.1.0"
   dependencies:
     acorn: "npm:^8.0.0"
     acorn-walk: "npm:^8.0.0"
@@ -918,8 +918,8 @@ __metadata:
     find-up: "npm:^7.0.0"
     node-elm-compiler: "npm:5.0.6"
   peerDependencies:
-    vite: ">= 5.0.0"
-  checksum: 10c0/77125e0566a453bef02831f2f60fa3a0b7dcaa9c2a9d9a0da951fae429fa1ebf850c80c919f9d2a308dbe82aa1c45be14464925cc2d15f5e165ac42ccf441171
+    vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
+  checksum: 10c0/3abef00add886e84123b3a158c58d0ca464deaad44544aa784e6b93e53ca25443ebbfe3a415e40879810d3965679a689f1eb9e5074b983910acc9b1398885ef2
   languageName: node
   linkType: hard
 
